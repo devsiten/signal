@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isConnected, isAdmin, wallet } = useWallet();
+  const { isConnected, isAdmin, wallet, disconnect } = useWallet();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -72,9 +72,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </Link>
               </nav>
             </div>
-            <Link href="/" className="text-sm text-text-muted hover:text-text-secondary transition-colors">
-              ← Back to Site
-            </Link>
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-text-muted font-mono hidden sm:block">
+                {wallet?.slice(0, 4)}...{wallet?.slice(-4)}
+              </span>
+              <button
+                onClick={() => {
+                  disconnect();
+                  router.push('/');
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/20 text-red-400 text-sm hover:bg-red-900/30 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Disconnect
+              </button>
+            </div>
           </div>
         </div>
       </div>

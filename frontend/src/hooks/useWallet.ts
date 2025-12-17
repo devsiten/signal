@@ -56,11 +56,57 @@ export function useWallet() {
         if (subResponse.success && subResponse.data) {
           setSubscription(subResponse.data);
         }
+
+        // Set initial activity time
+        localStorage.setItem('lastActivity', Date.now().toString());
       }
     };
 
     checkSession();
   }, []);
+
+  // Auto-logout after 2 hours of inactivity
+  useEffect(() => {
+    if (!wallet) return;
+
+    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+    const CHECK_INTERVAL = 60 * 1000; // Check every minute
+
+    // Update last activity on user interactions
+    const updateActivity = () => {
+      localStorage.setItem('lastActivity', Date.now().toString());
+    };
+
+    // Track activity events
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
+
+    // Check for inactivity periodically
+    const interval = setInterval(async () => {
+      const lastActivity = localStorage.getItem('lastActivity');
+      if (lastActivity) {
+        const elapsed = Date.now() - parseInt(lastActivity, 10);
+        if (elapsed >= INACTIVITY_TIMEOUT) {
+          // Auto-logout
+          if (walletType) {
+            await disconnectWallet(walletType);
+          }
+          await logout();
+          setWallet(null, null);
+          setSubscription(null);
+          setIsAdmin(false);
+          localStorage.removeItem('lastActivity');
+          // Force redirect to home
+          window.location.href = '/';
+        }
+      }
+    }, CHECK_INTERVAL);
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, updateActivity));
+      clearInterval(interval);
+    };
+  }, [wallet, walletType, setWallet, setSubscription, setIsAdmin]);
 
   // Connect and authenticate
   const connect = useCallback(async (type: WalletType) => {
