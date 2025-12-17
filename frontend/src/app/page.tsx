@@ -20,7 +20,7 @@ export default function HomePage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      
+
       const settingsResponse = await getSettings();
       if (settingsResponse.success && settingsResponse.data) {
         setSettings(settingsResponse.data);
@@ -31,7 +31,7 @@ export default function HomePage() {
         setPosts(postsResponse.data.posts);
         setMonths(postsResponse.data.months);
       }
-      
+
       setLoading(false);
     }
 
@@ -60,7 +60,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
-              Premium crypto insights from a trader who&apos;s been in the trenches. 
+              Premium crypto insights from a trader who&apos;s been in the trenches.
               Get the calls that matter, skip the noise.
             </p>
 
@@ -144,13 +144,13 @@ export default function HomePage() {
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-accent-gold/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
               </div>
-              
+
               <div className="relative">
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-text-primary mb-4">
-                  Ready to Get the Edge?
+                  Unlock Your Trading Potential
                 </h2>
                 <p className="text-text-secondary text-lg mb-8 max-w-xl mx-auto">
-                  Join hundreds of traders who are already receiving premium signals and making informed decisions.
+                  Get exclusive access to premium signals and proven strategies trusted by successful traders worldwide.
                 </p>
                 <PaymentButton className="px-10 py-4 text-lg" />
                 <p className="mt-4 text-text-muted text-sm">
