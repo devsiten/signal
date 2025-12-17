@@ -21,7 +21,7 @@ export function Footer() {
             </Link>
             <p className="text-text-secondary text-sm max-w-md leading-relaxed">
               Premium crypto insights and market alpha. Stay ahead of the curve with
-              expert analysis and real-time signals from a proven trader.
+              expert analysis and real-time signals from a proven Degen.
             </p>
           </div>
 

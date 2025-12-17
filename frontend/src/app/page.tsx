@@ -60,7 +60,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
-              Premium crypto insights from a trader who&apos;s been in the trenches.
+              Premium crypto insights from a Degen who&apos;s been in the trenches.
               Get the calls that matter, skip the noise.
             </p>
 
@@ -87,8 +87,8 @@ export default function HomePage() {
             {[
               { value: '20K+', label: 'X Followers' },
               { value: '1.7K+', label: 'Telegram Members' },
-              { value: '87%', label: 'Win Rate' },
-              { value: '3Y+', label: 'Track Record' },
+              { value: '90%+', label: 'Win Rate' },
+              { value: '5Y+', label: 'Track Record' },
             ].map((stat, index) => (
               <div key={index} className="text-center p-6 rounded-xl bg-bg-card border border-border-subtle">
                 <div className="font-display text-3xl font-bold gradient-text mb-1">{stat.value}</div>
