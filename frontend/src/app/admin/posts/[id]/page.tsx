@@ -5,7 +5,7 @@ export const runtime = 'edge';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { getPost, adminUpdatePost, adminGetUploadUrl, uploadToR2 } from '@/lib/api';
+import { getPost, adminUpdatePost, adminUploadImage } from '@/lib/api';
 import { useAppStore } from '@/stores/app';
 import { validateImageFile, cn } from '@/lib/utils';
 import type { Post } from '@/types';
@@ -59,17 +59,11 @@ export default function EditPostPage() {
       }
 
       try {
-        const urlResponse = await adminGetUploadUrl(file.name, file.type);
-        if (!urlResponse.success || !urlResponse.data) {
-          throw new Error('Failed to get upload URL');
+        const uploadResponse = await adminUploadImage(file);
+        if (!uploadResponse.success || !uploadResponse.data) {
+          throw new Error(uploadResponse.error || 'Failed to upload image');
         }
-
-        const uploaded = await uploadToR2(urlResponse.data.uploadUrl, file);
-        if (!uploaded) {
-          throw new Error('Failed to upload image');
-        }
-
-        newImages.push(urlResponse.data.publicUrl);
+        newImages.push(uploadResponse.data.url);
       } catch (error) {
         addToast('error', `Failed to upload ${file.name}`);
       }

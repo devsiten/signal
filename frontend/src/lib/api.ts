@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ApiResponse,
   Post,
   PostPreview,
@@ -164,7 +164,7 @@ export async function adminUploadImage(file: File): Promise<ApiResponse<{ url: s
   formData.append('file', file);
 
   try {
-    const response = await fetch(`${API_URL}/api/admin/upload`, {
+    const response = await fetch(`${API_BASE}/api/admin/upload`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
@@ -177,11 +177,4 @@ export async function adminUploadImage(file: File): Promise<ApiResponse<{ url: s
   } catch {
     return { success: false, error: 'Upload failed' };
   }
-});
 }
-
- catch {
-    return false;
-  }
-}
-

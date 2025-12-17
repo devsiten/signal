@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { getCurrentMonth, validateImageFile, cn } from '@/lib/utils';
 export default function NewPostPage() {
   const router = useRouter();
   const { addToast } = useAppStore();
-  
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [month, setMonth] = useState(getCurrentMonth());
@@ -38,7 +38,8 @@ export default function NewPostPage() {
         if (!uploadResponse.success || !uploadResponse.data) {
           throw new Error(uploadResponse.error || 'Failed to upload image');
         }
-        newImages.push(uploadResponse.data.url); catch (error) {
+        newImages.push(uploadResponse.data.url);
+      } catch (error) {
         addToast('error', `Failed to upload ${file.name}`);
       }
     }
@@ -191,13 +192,13 @@ export default function NewPostPage() {
           <label className="block text-sm font-medium text-text-primary mb-2">
             Images
           </label>
-          
+
           {/* Upload Button */}
           <div className="mb-4">
             <label className={cn(
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed cursor-pointer transition-colors',
-              uploading 
-                ? 'border-border-subtle bg-bg-tertiary cursor-wait' 
+              uploading
+                ? 'border-border-subtle bg-bg-tertiary cursor-wait'
                 : 'border-border-accent hover:border-accent-gold/50 hover:bg-bg-tertiary'
             )}>
               <input
@@ -265,4 +266,3 @@ export default function NewPostPage() {
     </div>
   );
 }
-
