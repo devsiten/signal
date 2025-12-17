@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ApiResponse,
   Post,
   PostPreview,
@@ -159,30 +159,29 @@ export async function adminUpdateSettings(settings: {
   });
 }
 
-export async function adminGetUploadUrl(
-  filename: string,
-  contentType: string
-): Promise<ApiResponse<UploadUrl>> {
-  return fetchApi('/api/admin/upload-url', {
-    method: 'POST',
-    body: JSON.stringify({ filename, contentType }),
-  });
+export async function adminUploadImage(file: File): Promise<ApiResponse<{ url: string }>> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await fetch(`${API_URL}/api/admin/upload`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Upload failed' };
+    }
+    return { success: true, data };
+  } catch {
+    return { success: false, error: 'Upload failed' };
+  }
+});
 }
 
-export async function uploadToR2(
-  uploadUrl: string,
-  file: File
-): Promise<boolean> {
-  try {
-    const response = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': file.type,
-      },
-    });
-    return response.ok;
-  } catch {
+ catch {
     return false;
   }
 }
+

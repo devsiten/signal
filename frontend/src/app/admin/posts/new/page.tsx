@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { adminCreatePost, adminGetUploadUrl, uploadToR2 } from '@/lib/api';
+import { adminCreatePost, adminUploadImage } from '@/lib/api';
 import { useAppStore } from '@/stores/app';
 import { getCurrentMonth, validateImageFile, cn } from '@/lib/utils';
 
@@ -34,18 +34,11 @@ export default function NewPostPage() {
       }
 
       try {
-        const urlResponse = await adminGetUploadUrl(file.name, file.type);
-        if (!urlResponse.success || !urlResponse.data) {
-          throw new Error('Failed to get upload URL');
+        const uploadResponse = await adminUploadImage(file);
+        if (!uploadResponse.success || !uploadResponse.data) {
+          throw new Error(uploadResponse.error || 'Failed to upload image');
         }
-
-        const uploaded = await uploadToR2(urlResponse.data.uploadUrl, file);
-        if (!uploaded) {
-          throw new Error('Failed to upload image');
-        }
-
-        newImages.push(urlResponse.data.publicUrl);
-      } catch (error) {
+        newImages.push(uploadResponse.data.url); catch (error) {
         addToast('error', `Failed to upload ${file.name}`);
       }
     }
@@ -272,3 +265,4 @@ export default function NewPostPage() {
     </div>
   );
 }
+
