@@ -11,7 +11,7 @@ import { PaymentButton } from '@/components/PaymentButton';
 import type { PostPreview, MonthGroup } from '@/types';
 
 export default function HomePage() {
-  const { isPremium, isConnected } = useWallet();
+  const { isPremium, isConnected, isAdmin } = useWallet();
   const { selectedMonth, setSettings } = useAppStore();
   const [posts, setPosts] = useState<PostPreview[]>([]);
   const [months, setMonths] = useState<MonthGroup[]>([]);
@@ -65,12 +65,14 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2">
-              {isPremium ? (
+              {isPremium || isAdmin ? (
                 <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-accent-emerald/10 border border-accent-emerald/30">
                   <svg className="w-5 h-5 text-accent-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-accent-emerald font-medium">You have Premium Access</span>
+                  <span className="text-accent-emerald font-medium">
+                    {isAdmin ? 'Admin Access' : 'You have Premium Access'}
+                  </span>
                 </div>
               ) : (
                 <>
@@ -137,7 +139,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      {!isPremium && (
+      {!isPremium && !isAdmin && (
         <section className="py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative rounded-2xl bg-gradient-to-br from-bg-card to-bg-tertiary border border-border-subtle p-10 md:p-16 text-center overflow-hidden">
