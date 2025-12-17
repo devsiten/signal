@@ -10,7 +10,7 @@ export default function DisclaimerPage() {
             Disclaimer
           </h1>
           <p className="text-text-secondary">
-            Please read this carefully before using our service.
+            Please read this carefully before using this service.
           </p>
         </div>
 
@@ -24,21 +24,21 @@ export default function DisclaimerPage() {
               should not be construed as financial, investment, or trading advice.
             </p>
             <p>
-              We are not registered investment advisors, brokers, or dealers. All trading involves
+              I am not a registered investment advisor, broker, or dealer. All trading involves
               risk, and you should never trade with money you cannot afford to lose.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2>Our Track Record</h2>
+            <h2>My Track Record</h2>
             <p>
-              We&apos;re proud of our 90%+ win rate and 5+ years of experience in the crypto markets.
-              Our signals are backed by thorough analysis and a proven trading methodology. We share
-              our results transparently in our Win Gallery.
+              I&apos;m proud of my 90%+ win rate and 5+ years of experience in the crypto markets.
+              My signals are backed by thorough analysis and a proven trading methodology. I share
+              my results transparently in the Win Gallery.
             </p>
             <p>
               However, past performance is not a guarantee of future results. The cryptocurrency
-              market is highly volatile and unpredictable. While our track record is strong, every
+              market is highly volatile and unpredictable. While my track record is strong, every
               trade carries risk. Always do your own research to validate any signal before acting on it.
             </p>
           </section>
@@ -47,7 +47,7 @@ export default function DisclaimerPage() {
             <h2>Trade Responsibly</h2>
             <p>
               <strong>Only trade what you can afford to lose.</strong> This is the golden rule of
-              trading. No matter how confident you are in a trade or how good our signals are,
+              trading. No matter how confident you are in a trade or how good my signals are,
               never risk money you need for bills, rent, or other essentials.
             </p>
             <p>
@@ -92,7 +92,7 @@ export default function DisclaimerPage() {
               or claims arising from:
             </p>
             <ul>
-              <li>Trading decisions made based on our content</li>
+              <li>Trading decisions made based on my content</li>
               <li>Technical issues or service interruptions</li>
               <li>Information that may be inaccurate or outdated</li>
               <li>Your reliance on any content provided</li>
@@ -109,7 +109,7 @@ export default function DisclaimerPage() {
               <li>Payments are made directly on the Solana blockchain</li>
               <li>Subscription grants access for 30 days from payment or renewal</li>
               <li>Early renewal extends your existing subscription</li>
-              <li>Subscriptions may be paused at any time at our discretion</li>
+              <li>Subscriptions may be paused at any time at my discretion</li>
               <li>No refunds are provided for any reason</li>
             </ul>
           </section>
@@ -117,7 +117,7 @@ export default function DisclaimerPage() {
           <section>
             <h2>Changes to This Disclaimer</h2>
             <p>
-              We reserve the right to modify this disclaimer at any time. Continued use of our
+              I reserve the right to modify this disclaimer at any time. Continued use of this
               service after changes constitutes acceptance of the modified terms.
             </p>
             <p className="text-text-muted text-sm mt-6">
