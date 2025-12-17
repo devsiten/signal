@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -29,13 +31,13 @@ export default function PostPage() {
 
       setLoading(true);
       const response = await getPost(postId, wallet || undefined);
-      
+
       if (response.success && response.data) {
         setPost(response.data);
       } else {
         setError(response.error || 'Post not found');
       }
-      
+
       setLoading(false);
     }
 

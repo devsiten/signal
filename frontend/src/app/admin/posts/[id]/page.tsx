@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -13,7 +15,7 @@ export default function EditPostPage() {
   const params = useParams();
   const { addToast } = useAppStore();
   const postId = parseInt(params.id as string, 10);
-  
+
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -234,12 +236,12 @@ export default function EditPostPage() {
           <label className="block text-sm font-medium text-text-primary mb-2">
             Images
           </label>
-          
+
           <div className="mb-4">
             <label className={cn(
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed cursor-pointer transition-colors',
-              uploading 
-                ? 'border-border-subtle bg-bg-tertiary cursor-wait' 
+              uploading
+                ? 'border-border-subtle bg-bg-tertiary cursor-wait'
                 : 'border-border-accent hover:border-accent-gold/50 hover:bg-bg-tertiary'
             )}>
               <input
