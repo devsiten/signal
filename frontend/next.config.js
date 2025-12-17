@@ -11,7 +11,7 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_URL: 'https://hussayn-signal-api.devsiten.workers.dev',
-    NEXT_PUBLIC_SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
+    NEXT_PUBLIC_SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=e495db18-fb79-4c7b-9750-5bf08d316aaf',
   },
 };
 

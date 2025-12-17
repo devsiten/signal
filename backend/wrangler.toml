@@ -6,9 +6,9 @@ compatibility_date = "2024-07-25"
 SUBSCRIPTION_DAYS = "30"
 PRICE_SOL = "0.5"
 # Add your admin wallet(s) - comma separated
-ADMIN_WALLETS = "YOUR_ADMIN_WALLET_ADDRESS_HERE"
-# Solana RPC endpoint
-SOLANA_RPC = "https://api.mainnet-beta.solana.com"
+ADMIN_WALLETS = "8eQUQeiqaroRzjLZoZtqnz8371X87WUTNdv5JRKbmLe2"
+# Solana RPC endpoint (Helius)
+SOLANA_RPC = "https://mainnet.helius-rpc.com/?api-key=e495db18-fb79-4c7b-9750-5bf08d316aaf"
 
 # D1 Database
 [[d1_databases]]
