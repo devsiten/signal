@@ -5,7 +5,7 @@ export const runtime = 'edge';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@/hooks/useWallet';
-import { getSubscriptionStatus } from '@/lib/api';
+import { getUserProfile, setUsername } from '@/lib/api';
 import { useAppStore } from '@/stores/app';
 import { PaymentButton } from '@/components/PaymentButton';
 import { formatWallet } from '@/lib/wallet';
@@ -22,7 +22,7 @@ export default function ProfilePage() {
     const { addToast } = useAppStore();
 
     const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
-    const [username, setUsername] = useState('');
+    const [username, setUsernameState] = useState('');
     const [newUsername, setNewUsername] = useState('');
     const [savingUsername, setSavingUsername] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -38,22 +38,24 @@ export default function ProfilePage() {
 
             setLoading(true);
 
-            // Load subscription status
-            const subResponse = await getSubscriptionStatus(wallet);
-            if (subResponse.success && subResponse.data) {
-                const expiresAt = subResponse.data.expires_at;
-                const daysLeft = expiresAt
-                    ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                    : 0;
+            // Load user profile from backend
+            const profileResponse = await getUserProfile();
+            if (profileResponse.success && profileResponse.data) {
+                setUsernameState(profileResponse.data.username || '');
 
-                setSubscription({
-                    isActive: subResponse.data.is_active,
-                    expiresAt,
-                    daysLeft: Math.max(0, daysLeft),
-                });
+                if (profileResponse.data.subscription) {
+                    const expiresAt = profileResponse.data.subscription.expires_at;
+                    const daysLeft = expiresAt
+                        ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                        : 0;
+
+                    setSubscription({
+                        isActive: profileResponse.data.subscription.is_active,
+                        expiresAt,
+                        daysLeft: Math.max(0, daysLeft),
+                    });
+                }
             }
-
-            // TODO: Load username from backend
 
             setLoading(false);
         }
@@ -67,13 +69,27 @@ export default function ProfilePage() {
             return;
         }
 
+        if (newUsername.trim().length < 3) {
+            addToast('error', 'Username must be at least 3 characters');
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(newUsername.trim())) {
+            addToast('error', 'Username can only contain letters, numbers, and underscores');
+            return;
+        }
+
         setSavingUsername(true);
 
-        // TODO: Save username to backend with uniqueness check
-        // For now, just simulate
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setUsername(newUsername.trim());
-        addToast('success', 'Username saved');
+        const response = await setUsername(newUsername.trim());
+
+        if (response.success && response.data) {
+            setUsernameState(response.data.username);
+            setNewUsername('');
+            addToast('success', 'Username saved successfully!');
+        } else {
+            addToast('error', response.error || 'Failed to save username');
+        }
 
         setSavingUsername(false);
     }

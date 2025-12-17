@@ -178,3 +178,25 @@ export async function adminUploadImage(file: File): Promise<ApiResponse<{ url: s
     return { success: false, error: 'Upload failed' };
   }
 }
+
+// User APIs
+export interface UserProfile {
+  wallet: string;
+  username: string | null;
+  created_at: string;
+  subscription: {
+    is_active: boolean;
+    expires_at: string;
+  } | null;
+}
+
+export async function getUserProfile(): Promise<ApiResponse<UserProfile>> {
+  return fetchApi('/api/user/profile');
+}
+
+export async function setUsername(username: string): Promise<ApiResponse<{ success: boolean; username: string }>> {
+  return fetchApi('/api/user/username', {
+    method: 'PUT',
+    body: JSON.stringify({ username }),
+  });
+}
