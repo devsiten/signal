@@ -85,9 +85,9 @@ export default function HomePage() {
 
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 animate-slide-up stagger-3">
             {[
-              { value: '500+', label: 'Profitable Calls' },
+              { value: '20K+', label: 'X Followers' },
+              { value: '1.7K+', label: 'Telegram Members' },
               { value: '87%', label: 'Win Rate' },
-              { value: '2000+', label: 'Community Members' },
               { value: '3Y+', label: 'Track Record' },
             ].map((stat, index) => (
               <div key={index} className="text-center p-6 rounded-xl bg-bg-card border border-border-subtle">
