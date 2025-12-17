@@ -157,7 +157,7 @@ export default function HomePage() {
                 </p>
                 <PaymentButton className="px-10 py-4 text-lg" />
                 <p className="mt-4 text-text-muted text-sm">
-                  30-day access • Instant activation
+                  30-day access • Instant activation • No refunds
                 </p>
               </div>
             </div>
