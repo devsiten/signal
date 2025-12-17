@@ -149,6 +149,23 @@ export async function adminDeletePost(id: number): Promise<ApiResponse<void>> {
   return fetchApi(`/api/admin/posts/${id}`, { method: 'DELETE' });
 }
 
+export async function adminMarkTradeResult(
+  id: number,
+  result: 'win' | 'lose' | null
+): Promise<ApiResponse<{ success: boolean; trade_result: string | null }>> {
+  return fetchApi(`/api/admin/posts/${id}/result`, {
+    method: 'PUT',
+    body: JSON.stringify({ result }),
+  });
+}
+
+export async function getWinRate(): Promise<ApiResponse<{
+  allTime: { wins: number; losses: number; total: number; winRate: number };
+  monthly: Array<{ month: string; label: string; wins: number; losses: number; total: number; winRate: number }>;
+}>> {
+  return fetchApi('/api/win-rate');
+}
+
 export async function adminUpdateSettings(settings: {
   is_paused?: boolean;
   pause_message?: string;

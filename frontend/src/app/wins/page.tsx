@@ -27,8 +27,8 @@ export default function WinsPage() {
 
       const postsResponse = await getPosts(selectedMonth || undefined);
       if (postsResponse.success && postsResponse.data) {
-        // Filter to premium posts only for the wins gallery
-        setPosts(postsResponse.data.posts.filter((p) => p.is_premium));
+        // Filter to posts marked as 'win' only
+        setPosts(postsResponse.data.posts.filter((p) => (p as any).trade_result === 'win'));
         setMonths(postsResponse.data.months);
       }
 

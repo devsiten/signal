@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { adminGetPosts, adminDeletePost } from '@/lib/api';
+import { adminGetPosts, adminDeletePost, adminMarkTradeResult } from '@/lib/api';
 import { formatDate, formatMonthLabel, cn } from '@/lib/utils';
 import { useAppStore } from '@/stores/app';
 import type { Post } from '@/types';
@@ -12,6 +12,7 @@ export default function AdminPostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [marking, setMarking] = useState<number | null>(null);
 
   async function loadPosts() {
     setLoading(true);
@@ -28,10 +29,10 @@ export default function AdminPostsPage() {
 
   async function handleDelete(id: number) {
     if (!confirm('Are you sure you want to delete this post?')) return;
-    
+
     setDeleting(id);
     const response = await adminDeletePost(id);
-    
+
     if (response.success) {
       addToast('success', 'Post deleted');
       setPosts(posts.filter(p => p.id !== id));
@@ -39,6 +40,19 @@ export default function AdminPostsPage() {
       addToast('error', response.error || 'Failed to delete post');
     }
     setDeleting(null);
+  }
+
+  async function handleMarkResult(id: number, result: 'win' | 'lose' | null) {
+    setMarking(id);
+    const response = await adminMarkTradeResult(id, result);
+
+    if (response.success) {
+      addToast('success', result ? `Marked as ${result}` : 'Cleared result');
+      setPosts(posts.map(p => p.id === id ? { ...p, trade_result: result } : p));
+    } else {
+      addToast('error', response.error || 'Failed to mark result');
+    }
+    setMarking(null);
   }
 
   return (
@@ -101,6 +115,17 @@ export default function AdminPostsPage() {
                     <span>{formatMonthLabel(post.month)}</span>
                     <span>•</span>
                     <span>{formatDate(post.created_at)}</span>
+                    {(post as any).trade_result && (
+                      <>
+                        <span>•</span>
+                        <span className={cn(
+                          'font-medium',
+                          (post as any).trade_result === 'win' ? 'text-accent-emerald' : 'text-red-400'
+                        )}>
+                          {(post as any).trade_result === 'win' ? '✓ WIN' : '✗ LOSE'}
+                        </span>
+                      </>
+                    )}
                     {post.images.length > 0 && (
                       <>
                         <span>•</span>
@@ -110,6 +135,42 @@ export default function AdminPostsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Trade Result Buttons */}
+                  <div className="flex items-center gap-1 mr-2">
+                    <button
+                      onClick={() => handleMarkResult(post.id, 'win')}
+                      disabled={marking === post.id}
+                      className={cn(
+                        'px-2 py-1 text-xs rounded-lg transition-colors',
+                        (post as any).trade_result === 'win'
+                          ? 'bg-accent-emerald/20 text-accent-emerald'
+                          : 'bg-bg-tertiary text-text-muted hover:text-accent-emerald hover:bg-accent-emerald/10'
+                      )}
+                    >
+                      Win
+                    </button>
+                    <button
+                      onClick={() => handleMarkResult(post.id, 'lose')}
+                      disabled={marking === post.id}
+                      className={cn(
+                        'px-2 py-1 text-xs rounded-lg transition-colors',
+                        (post as any).trade_result === 'lose'
+                          ? 'bg-red-900/20 text-red-400'
+                          : 'bg-bg-tertiary text-text-muted hover:text-red-400 hover:bg-red-900/10'
+                      )}
+                    >
+                      Lose
+                    </button>
+                    {(post as any).trade_result && (
+                      <button
+                        onClick={() => handleMarkResult(post.id, null)}
+                        disabled={marking === post.id}
+                        className="px-2 py-1 text-xs rounded-lg bg-bg-tertiary text-text-muted hover:text-text-secondary transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                   <Link
                     href={`/admin/posts/${post.id}`}
                     className="px-3 py-1.5 text-sm rounded-lg bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
