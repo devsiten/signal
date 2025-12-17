@@ -55,13 +55,13 @@ export default function HomePage() {
             </div>
 
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary mb-6 animate-slide-up">
-              Turn Market Noise Into{' '}
-              <span className="gradient-text">Alpha</span>
+              Stop Losing Money to{' '}
+              <span className="gradient-text">Market Noise</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
-              Premium crypto insights from a Degen who&apos;s been in the trenches.
-              Get the calls that matter, skip the noise.
+              Hussayn Signal drops the alpha that actually prints. No fluff, no hopium —
+              just battle-tested calls from a Degen who&apos;s seen it all.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2">
@@ -149,14 +149,15 @@ export default function HomePage() {
 
               <div className="relative">
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-text-primary mb-4">
-                  Unlock Your Trading Potential
+                  Ready to Stack Some Wins?
                 </h2>
                 <p className="text-text-secondary text-lg mb-8 max-w-xl mx-auto">
-                  Get exclusive access to premium signals and proven strategies trusted by successful traders worldwide.
+                  Join the Hussayn Signal fam and get the edge that degens dream about.
+                  Premium calls, full transparency, real results.
                 </p>
                 <PaymentButton className="px-10 py-4 text-lg" />
                 <p className="mt-4 text-text-muted text-sm">
-                  30-day access • Cancel anytime • No refunds
+                  30-day access • Instant activation
                 </p>
               </div>
             </div>
