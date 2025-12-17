@@ -11,7 +11,7 @@
     "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
-    "next": "14.3.0",
+    "next": "14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "@solana/web3.js": "^1.95.3",
