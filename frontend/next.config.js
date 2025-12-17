@@ -9,8 +9,9 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    runtime: 'edge',
+  env: {
+    NEXT_PUBLIC_API_URL: 'https://hussayn-signal-api.devsiten.workers.dev',
+    NEXT_PUBLIC_SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
   },
 };
 
