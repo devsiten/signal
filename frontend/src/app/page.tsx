@@ -131,7 +131,7 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} isPremium={isPremium} locked={!isPremium} />
+                <PostCard key={post.id} post={post} isPremium={isPremium || isAdmin} locked={!isPremium && !isAdmin} />
               ))}
             </div>
           )}

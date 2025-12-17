@@ -14,7 +14,7 @@ import type { Post } from '@/types';
 export default function PostPage() {
   const params = useParams();
   const router = useRouter();
-  const { wallet, isPremium } = useWallet();
+  const { wallet, isPremium, isAdmin } = useWallet();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export default function PostPage() {
     loadPost();
   }, [postId, wallet]);
 
-  const isLocked = post?.is_premium && !isPremium;
+  const isLocked = post?.is_premium && !isPremium && !isAdmin;
 
   if (loading) {
     return (

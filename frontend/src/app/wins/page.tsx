@@ -10,7 +10,7 @@ import { PaymentButton } from '@/components/PaymentButton';
 import type { PostPreview, MonthGroup } from '@/types';
 
 export default function WinsPage() {
-  const { isPremium } = useWallet();
+  const { isPremium, isAdmin } = useWallet();
   const { selectedMonth, setSettings } = useAppStore();
   const [posts, setPosts] = useState<PostPreview[]>([]);
   const [months, setMonths] = useState<MonthGroup[]>([]);
@@ -56,7 +56,7 @@ export default function WinsPage() {
 
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">
             Real trades, real profits. Every win documented with screenshots.
-            {!isPremium && ' Subscribe to see all winning calls with full details.'}
+            {!isPremium && !isAdmin && ' Subscribe to see all winning calls with full details.'}
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function WinsPage() {
         </div>
 
         {/* Locked overlay for non-premium */}
-        {!isPremium && (
+        {!isPremium && !isAdmin && (
           <div className="mb-10 p-6 rounded-2xl bg-gradient-to-r from-accent-gold/10 to-accent-emerald/10 border border-accent-gold/20">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
@@ -111,7 +111,7 @@ export default function WinsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} isPremium={isPremium} locked={!isPremium} />
+              <PostCard key={post.id} post={post} isPremium={isPremium || isAdmin} locked={!isPremium && !isAdmin} />
             ))}
           </div>
         )}
