@@ -30,16 +30,30 @@ export default function DisclaimerPage() {
           </section>
 
           <section className="mb-10">
-            <h2>No Guarantees</h2>
+            <h2>Our Track Record</h2>
             <p>
-              Past performance is not indicative of future results. While we share our trading
-              activities and results transparently, we make no guarantees or promises about future
-              performance. The cryptocurrency market is highly volatile and unpredictable.
+              We&apos;re proud of our 90%+ win rate and 5+ years of experience in the crypto markets.
+              Our signals are backed by thorough analysis and a proven trading methodology. We share
+              our results transparently in our Win Gallery.
             </p>
             <p>
-              Any win screenshots or performance data shared are historical records of specific
-              trades and should not be interpreted as typical results or promises of similar
-              outcomes.
+              However, past performance is not a guarantee of future results. The cryptocurrency
+              market is highly volatile and unpredictable. While our track record is strong, every
+              trade carries risk. Always do your own research to validate any signal before acting on it.
+            </p>
+          </section>
+
+          <section className="mb-10">
+            <h2>Trade Responsibly</h2>
+            <p>
+              <strong>Only trade what you can afford to lose.</strong> This is the golden rule of
+              trading. No matter how confident you are in a trade or how good our signals are,
+              never risk money you need for bills, rent, or other essentials.
+            </p>
+            <p>
+              Use proper risk management: set stop losses, size your positions appropriately,
+              and never put all your capital into a single trade. Smart risk management is what
+              separates successful traders from the rest.
             </p>
           </section>
 
