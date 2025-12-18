@@ -9,28 +9,31 @@ import { cn } from '@/lib/utils';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { isConnected, isAdmin, wallet, disconnect } = useWallet();
-  const [checking, setChecking] = useState(true);
+  const [initialCheck, setInitialCheck] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setChecking(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+    // Quick initial check - only on first render
+    if (initialCheck) {
+      const timer = setTimeout(() => {
+        setInitialCheck(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [initialCheck]);
 
   useEffect(() => {
-    if (!checking && (!isConnected || !isAdmin)) {
+    if (!initialCheck && (!isConnected || !isAdmin)) {
       router.push('/');
     }
-  }, [checking, isConnected, isAdmin, router]);
+  }, [initialCheck, isConnected, isAdmin, router]);
 
-  if (checking) {
+  // Only show loading on very first render, briefly
+  if (initialCheck && !isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full border-2 border-accent-gold border-t-transparent animate-spin" />
-          <p className="text-text-secondary">Checking permissions...</p>
+          <p className="text-text-secondary">Loading...</p>
         </div>
       </div>
     );
