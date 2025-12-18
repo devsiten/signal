@@ -129,7 +129,7 @@ export default function DisclaimerPage() {
         {/* Back Link */}
         <div className="mt-10 text-center">
           <Link href="/" className="text-accent-gold hover:text-accent-goldLight transition-colors">
-            â† Back to Home
+            Back to Home
           </Link>
         </div>
       </div>
