@@ -61,7 +61,7 @@ export default function HomePage() {
 
             <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
               Hussayn Alpha drops the alpha that actually prints. No fluff, no hopium.
-              just battle-tested calls from a Degen who&apos;s seen it all.
+              Just battle tested calls from a Degen who&apos;s seen it all.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2">
