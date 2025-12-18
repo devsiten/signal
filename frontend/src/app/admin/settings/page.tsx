@@ -6,13 +6,13 @@ import { useAppStore } from '@/stores/app';
 import type { SiteSettings } from '@/types';
 
 export default function AdminSettingsPage() {
-  const { addToast, setSettings: setGlobalSettings, settings: globalSettings } = useAppStore();
+  const { addToast, setSettings: setGlobalSettings } = useAppStore();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  // Initialize from global store (persisted) if available
-  const [isPaused, setIsPaused] = useState(globalSettings?.is_paused ?? false);
-  const [pauseMessage, setPauseMessage] = useState(globalSettings?.pause_message ?? '');
+  // Start with false/empty, API will provide real values
+  const [isPaused, setIsPaused] = useState(false);
+  const [pauseMessage, setPauseMessage] = useState('');
 
   useEffect(() => {
     async function loadSettings() {
