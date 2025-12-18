@@ -84,7 +84,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border-subtle flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-text-muted text-sm">
-            Â© {currentYear} Hussayn Alpha. All rights reserved.
+            &copy; {currentYear} Hussayn Alpha. All rights reserved.
           </p>
           <p className="text-text-muted text-xs">
             Trading involves risk. Past performance is not indicative of future results.

@@ -122,6 +122,7 @@ export async function adminCreatePost(post: {
   images: string[];
   month: string;
   is_premium: boolean;
+  contract_address?: string;
 }): Promise<ApiResponse<Post>> {
   return fetchApi('/api/admin/posts', {
     method: 'POST',
@@ -137,6 +138,7 @@ export async function adminUpdatePost(
     images: string[];
     month: string;
     is_premium: boolean;
+    contract_address: string;
   }>
 ): Promise<ApiResponse<Post>> {
   return fetchApi(`/api/admin/posts/${id}`, {

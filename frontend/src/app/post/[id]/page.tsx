@@ -117,6 +117,27 @@ export default function PostPage() {
           <time className="text-text-secondary">
             {formatDate(post.created_at)}
           </time>
+
+          {/* Contract Address */}
+          {(post as any).contract_address && (
+            <div className="mt-4 flex items-center gap-2 px-4 py-3 rounded-lg bg-bg-tertiary border border-border-subtle">
+              <span className="text-text-muted text-sm">Contract:</span>
+              <code className="text-text-primary font-mono text-sm flex-1 truncate">
+                {(post as any).contract_address}
+              </code>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText((post as any).contract_address);
+                }}
+                className="flex items-center gap-1 px-2 py-1 rounded bg-accent-gold/20 text-accent-gold text-xs hover:bg-accent-gold/30 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy
+              </button>
+            </div>
+          )}
         </header>
 
         {/* Locked Content Overlay */}

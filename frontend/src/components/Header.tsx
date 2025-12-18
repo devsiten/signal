@@ -53,6 +53,12 @@ export function Header() {
                 Wins
               </Link>
               <Link
+                href="/loses"
+                className="text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Loses
+              </Link>
+              <Link
                 href="/pricing"
                 className="text-text-secondary hover:text-text-primary transition-colors"
               >
@@ -131,6 +137,13 @@ export function Header() {
                 className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
               >
                 Wins
+              </Link>
+              <Link
+                href="/loses"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
+              >
+                Loses
               </Link>
               <Link
                 href="/pricing"

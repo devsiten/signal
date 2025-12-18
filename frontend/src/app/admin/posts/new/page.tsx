@@ -16,6 +16,7 @@ export default function NewPostPage() {
   const [month, setMonth] = useState(getCurrentMonth());
   const [isPremium, setIsPremium] = useState(true);
   const [images, setImages] = useState<string[]>([]);
+  const [contractAddress, setContractAddress] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -74,6 +75,7 @@ export default function NewPostPage() {
       images,
       month,
       is_premium: isPremium,
+      contract_address: contractAddress.trim() || undefined,
     });
 
     if (response.success) {
@@ -121,6 +123,20 @@ export default function NewPostPage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter post title..."
             className="w-full"
+          />
+        </div>
+
+        {/* Contract Address */}
+        <div>
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Contract Address (optional)
+          </label>
+          <input
+            type="text"
+            value={contractAddress}
+            onChange={(e) => setContractAddress(e.target.value)}
+            placeholder="Enter token contract address..."
+            className="w-full font-mono text-sm"
           />
         </div>
 

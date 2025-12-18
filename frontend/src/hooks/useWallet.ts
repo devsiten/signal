@@ -70,19 +70,10 @@ export function useWallet() {
     if (!wallet) return;
 
     const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-    const CHECK_INTERVAL = 60 * 1000; // Check every minute
+    const CHECK_INTERVAL = 30 * 1000; // Check every 30 seconds
 
-    // Update last activity on user interactions
-    const updateActivity = () => {
-      localStorage.setItem('lastActivity', Date.now().toString());
-    };
-
-    // Track activity events
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-    events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
-
-    // Check for inactivity periodically
-    const interval = setInterval(async () => {
+    // Check if should auto-logout (runs immediately on page load)
+    const checkAndLogout = async () => {
       const lastActivity = localStorage.getItem('lastActivity');
       if (lastActivity) {
         const elapsed = Date.now() - parseInt(lastActivity, 10);
@@ -96,11 +87,27 @@ export function useWallet() {
           setSubscription(null);
           setIsAdmin(false);
           localStorage.removeItem('lastActivity');
-          // Force redirect to home
           window.location.href = '/';
+          return true;
         }
       }
-    }, CHECK_INTERVAL);
+      return false;
+    };
+
+    // Check immediately on page load
+    checkAndLogout();
+
+    // Update last activity on user interactions
+    const updateActivity = () => {
+      localStorage.setItem('lastActivity', Date.now().toString());
+    };
+
+    // Track activity events
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
+
+    // Check for inactivity periodically
+    const interval = setInterval(checkAndLogout, CHECK_INTERVAL);
 
     return () => {
       events.forEach(event => window.removeEventListener(event, updateActivity));
