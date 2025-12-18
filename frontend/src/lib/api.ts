@@ -66,7 +66,7 @@ export async function logout(): Promise<ApiResponse<void>> {
 export async function getSubscriptionStatus(
   wallet: string
 ): Promise<ApiResponse<SubscriptionStatus>> {
-  return fetchApi(`/api/subscription/status?wallet=${wallet}`);
+  return fetchApi(`/api/subscription?wallet=${wallet}`);
 }
 
 // Payments

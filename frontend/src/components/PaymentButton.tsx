@@ -39,6 +39,8 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
 
     setIsProcessing(true);
     setShowCheckStatus(false);
+    let currentReference: string | null = null;
+
     try {
       // Step 1: Create payment reference
       setStep('creating');
@@ -48,10 +50,7 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
       }
 
       const { reference, amount } = refResponse.data;
-
-      // Store reference in case verification fails
-      localStorage.setItem(`pending_payment_${wallet}`, reference);
-      setPendingReference(reference);
+      currentReference = reference;
 
       // Step 2: Create and sign transaction
       setStep('signing');
@@ -62,8 +61,13 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
 
       const signature = await signAndSendTransaction(transaction, walletType);
       if (!signature) {
-        throw new Error('Transaction cancelled or failed');
+        // User cancelled - don't store reference
+        throw new Error('Transaction cancelled');
       }
+
+      // Only store reference AFTER user has signed (transaction sent to chain)
+      localStorage.setItem(`pending_payment_${wallet}`, reference);
+      setPendingReference(reference);
 
       // Step 3: Verify payment on server
       setStep('verifying');
@@ -84,7 +88,11 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
       onSuccess?.();
     } catch (error) {
       console.error('Payment error:', error);
-      addToast('error', error instanceof Error ? error.message : 'Payment failed');
+      const message = error instanceof Error ? error.message : 'Payment failed';
+      // Only show toast if not a simple cancel
+      if (message !== 'Transaction cancelled') {
+        addToast('error', message);
+      }
     } finally {
       setIsProcessing(false);
       setStep('idle');
