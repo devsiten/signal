@@ -1,14 +1,22 @@
 ﻿'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '@/stores/app';
 import { getSettings } from '@/lib/api';
 
 export function PauseBanner() {
   const { settings, setSettings } = useAppStore();
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration - wait for client-side mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch settings on mount to ensure banner works on all pages
   useEffect(() => {
+    if (!mounted) return;
+
     async function loadSettings() {
       const response = await getSettings();
       if (response.success && response.data) {
@@ -16,8 +24,10 @@ export function PauseBanner() {
       }
     }
     loadSettings();
-  }, [setSettings]);
+  }, [mounted, setSettings]);
 
+  // Don't render until mounted (prevents hydration mismatch)
+  if (!mounted) return null;
   if (!settings?.is_paused) return null;
 
   return (
