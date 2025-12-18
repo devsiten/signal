@@ -148,9 +148,14 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
 
   if (isPaused) {
     return (
-      <button disabled className={cn('btn bg-bg-tertiary text-text-muted cursor-not-allowed', className)}>
-        Subscriptions Paused
-      </button>
+      <div className="flex flex-col items-center gap-2">
+        <button disabled className={cn('btn bg-bg-tertiary text-text-muted cursor-not-allowed', className)}>
+          Subscriptions Paused
+        </button>
+        {settings?.pause_message && (
+          <p className="text-sm text-text-muted text-center">{settings.pause_message}</p>
+        )}
+      </div>
     );
   }
 

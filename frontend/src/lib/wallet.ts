@@ -86,7 +86,11 @@ export async function createPaymentTransaction(
 
     const fromPubkey = new PublicKey(fromWallet);
     const toPubkey = new PublicKey(TREASURY_WALLET);
-    const referencePubkey = new PublicKey(reference);
+
+    // Generate a keypair for transaction reference (for tracking purposes)
+    // We don't use the backend reference directly as it's hex, not base58
+    const { Keypair } = await import('@solana/web3.js');
+    const referenceKeypair = Keypair.generate();
 
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
@@ -104,9 +108,9 @@ export async function createPaymentTransaction(
       })
     );
 
-    // Add reference for tracking
+    // Add reference for tracking (optional - helps identify the tx on chain)
     transaction.instructions[0].keys.push({
-      pubkey: referencePubkey,
+      pubkey: referenceKeypair.publicKey,
       isSigner: false,
       isWritable: false,
     });
