@@ -22,7 +22,9 @@ export default function HomePage() {
       setLoading(true);
 
       const settingsResponse = await getSettings();
+      console.log('Home page settings response:', settingsResponse);
       if (settingsResponse.success && settingsResponse.data) {
+        console.log('Settings loaded:', settingsResponse.data);
         setSettings(settingsResponse.data);
       }
 
