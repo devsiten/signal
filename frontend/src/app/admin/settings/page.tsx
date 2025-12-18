@@ -6,24 +6,33 @@ import { useAppStore } from '@/stores/app';
 import type { SiteSettings } from '@/types';
 
 export default function AdminSettingsPage() {
-  const { addToast, setSettings: setGlobalSettings } = useAppStore();
-  
+  const { addToast, setSettings: setGlobalSettings, settings: globalSettings } = useAppStore();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [pauseMessage, setPauseMessage] = useState('');
+  // Initialize from global store (persisted) if available
+  const [isPaused, setIsPaused] = useState(globalSettings?.is_paused ?? false);
+  const [pauseMessage, setPauseMessage] = useState(globalSettings?.pause_message ?? '');
 
   useEffect(() => {
     async function loadSettings() {
-      const response = await getSettings();
-      if (response.success && response.data) {
-        setIsPaused(response.data.is_paused);
-        setPauseMessage(response.data.pause_message);
+      try {
+        const response = await getSettings();
+        console.log('Admin settings API response:', response);
+        if (response.success && response.data) {
+          setIsPaused(response.data.is_paused);
+          setPauseMessage(response.data.pause_message);
+          setGlobalSettings(response.data);
+        } else {
+          console.error('Failed to load settings:', response.error);
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
       }
       setLoading(false);
     }
     loadSettings();
-  }, []);
+  }, [setGlobalSettings]);
 
   async function handleSave() {
     setSaving(true);
@@ -94,14 +103,12 @@ export default function AdminSettingsPage() {
             </div>
             <button
               onClick={togglePause}
-              className={`relative w-14 h-7 rounded-full transition-colors ${
-                isPaused ? 'bg-amber-600' : 'bg-bg-tertiary'
-              }`}
+              className={`relative w-14 h-7 rounded-full transition-colors ${isPaused ? 'bg-amber-600' : 'bg-bg-tertiary'
+                }`}
             >
               <span
-                className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-transform ${
-                  isPaused ? 'left-8' : 'left-1'
-                }`}
+                className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-transform ${isPaused ? 'left-8' : 'left-1'
+                  }`}
               />
             </button>
           </div>
@@ -123,7 +130,7 @@ export default function AdminSettingsPage() {
           <p className="text-text-secondary text-sm mb-4">
             This message is shown to users when subscriptions are paused.
           </p>
-          
+
           <textarea
             value={pauseMessage}
             onChange={(e) => setPauseMessage(e.target.value)}
