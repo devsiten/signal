@@ -194,19 +194,16 @@ export default function NewPostPage() {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Write your post content... (HTML supported)"
+            placeholder="Write your post content..."
             rows={12}
             className="w-full font-mono text-sm"
           />
-          <p className="mt-2 text-xs text-text-muted">
-            You can use HTML tags for formatting: &lt;p&gt;, &lt;h2&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;, etc.
-          </p>
         </div>
 
-        {/* Images */}
+        {/* Image */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            Images
+            Image
           </label>
 
           {/* Upload Button */}
@@ -238,7 +235,7 @@ export default function NewPostPage() {
                   <svg className="w-5 h-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-text-secondary">Click to upload images</span>
+                  <span className="text-text-secondary">Click to upload image</span>
                 </>
               )}
             </label>
