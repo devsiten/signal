@@ -23,14 +23,26 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
   const isPaused = settings?.is_paused;
   const price = settings?.price_sol || 0.5;
 
-  // Check for pending payment on mount
+  // Check for pending payment on mount - verify it's valid
   useEffect(() => {
     if (!wallet) return;
 
     const storedRef = localStorage.getItem(`pending_payment_${wallet}`);
     if (storedRef) {
-      setPendingReference(storedRef);
-      setShowCheckStatus(true);
+      // Verify the reference is actually valid before showing check status
+      checkPaymentStatus(storedRef).then((result) => {
+        if (result.success && result.data?.found && result.data.status !== 'expired') {
+          // Reference is valid and not expired
+          setPendingReference(storedRef);
+          setShowCheckStatus(true);
+        } else {
+          // Reference is invalid or expired - clear it
+          localStorage.removeItem(`pending_payment_${wallet}`);
+        }
+      }).catch(() => {
+        // On error, clear the reference
+        localStorage.removeItem(`pending_payment_${wallet}`);
+      });
     }
   }, [wallet]);
 
