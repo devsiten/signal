@@ -76,11 +76,11 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
           
           {isLocked ? (
             <span className="text-accent-gold text-sm font-medium">
-              Unlock with Premium â†’
+              Unlock with Premium
             </span>
           ) : (
             <span className="text-text-muted text-sm group-hover:text-accent-gold transition-colors">
-              Read more â†’
+              Read more
             </span>
           )}
         </div>
