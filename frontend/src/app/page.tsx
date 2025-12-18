@@ -54,12 +54,12 @@ export default function HomePage() {
               <span className="text-sm text-accent-gold font-medium">Proven Track Record</span>
             </div>
 
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary mb-6 animate-slide-up">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary mb-6 hero-title-animated">
               Stop Losing Money to{' '}
               <span className="gradient-text">Market Noise</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
+            <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed hero-subtitle-animated">
               Hussayn Alpha drops the alpha that actually prints. No fluff, no hopium.
               Just battle tested calls from a Degen who&apos;s seen it all.
             </p>

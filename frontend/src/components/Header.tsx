@@ -33,7 +33,7 @@ export function Header() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-gold to-accent-goldDark flex items-center justify-center shadow-glow-gold">
                 <span className="text-bg-primary font-display font-bold text-xl">H</span>
               </div>
-              <span className="font-display font-semibold text-xl text-text-primary group-hover:text-accent-gold transition-colors hidden sm:block">
+              <span className="font-display font-semibold text-xl text-text-primary group-hover:text-accent-gold transition-colors hidden sm:block logo-animated">
                 Hussayn Alpha
               </span>
             </Link>
