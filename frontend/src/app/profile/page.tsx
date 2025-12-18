@@ -42,6 +42,7 @@ export default function ProfilePage() {
             const profileResponse = await getUserProfile();
             if (profileResponse.success && profileResponse.data) {
                 setUsernameState(profileResponse.data.username || '');
+                setNewUsername(profileResponse.data.username || '');
 
                 if (profileResponse.data.subscription) {
                     const expiresAt = profileResponse.data.subscription.expires_at;
@@ -142,7 +143,7 @@ export default function ProfilePage() {
                             <div className="flex gap-3">
                                 <input
                                     type="text"
-                                    value={newUsername || username}
+                                    value={newUsername}
                                     onChange={(e) => setNewUsername(e.target.value)}
                                     placeholder="Choose a username"
                                     className="flex-1"
@@ -150,10 +151,10 @@ export default function ProfilePage() {
                                 />
                                 <button
                                     onClick={handleSaveUsername}
-                                    disabled={savingUsername || (!newUsername.trim() || newUsername.trim() === username)}
+                                    disabled={savingUsername || newUsername.trim() === username}
                                     className="btn btn-primary"
                                 >
-                                    {savingUsername ? 'Saving...' : username ? 'Change' : 'Save'}
+                                    {savingUsername ? 'Saving...' : 'Save'}
                                 </button>
                             </div>
                             <p className="text-xs text-text-muted mt-2">
