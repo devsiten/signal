@@ -103,7 +103,7 @@ export function useWallet() {
           setSubscription(null);
           setIsAdmin(false);
           localStorage.removeItem('lastActivity');
-          window.location.href = '/';
+          // Don't redirect - let user stay on current page
           return true;
         }
       }

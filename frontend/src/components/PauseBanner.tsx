@@ -1,9 +1,22 @@
 ﻿'use client';
 
+import { useEffect } from 'react';
 import { useAppStore } from '@/stores/app';
+import { getSettings } from '@/lib/api';
 
 export function PauseBanner() {
-  const { settings } = useAppStore();
+  const { settings, setSettings } = useAppStore();
+
+  // Fetch settings on mount to ensure banner works on all pages
+  useEffect(() => {
+    async function loadSettings() {
+      const response = await getSettings();
+      if (response.success && response.data) {
+        setSettings(response.data);
+      }
+    }
+    loadSettings();
+  }, [setSettings]);
 
   if (!settings?.is_paused) return null;
 
