@@ -121,7 +121,14 @@ export function useWallet() {
 
     setIsConnecting(true);
     try {
-      const publicKey = await connectWallet(type);
+      let publicKey: string | null = null;
+      try {
+        publicKey = await connectWallet(type);
+      } catch (err: any) {
+        addToast('error', err?.message || 'Failed to connect wallet');
+        return;
+      }
+
       if (!publicKey) {
         addToast('error', 'Failed to connect wallet');
         return;

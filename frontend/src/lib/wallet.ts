@@ -27,14 +27,24 @@ export async function connectWallet(type: 'phantom' | 'solflare'): Promise<strin
   try {
     const provider = type === 'phantom' ? getPhantomProvider() : getSolflareProvider();
     if (!provider) {
-      throw new Error(`${type} wallet not found`);
+      // Wallet extension not found - open install page
+      if (type === 'phantom') {
+        window.open('https://phantom.app/', '_blank');
+      } else {
+        window.open('https://solflare.com/', '_blank');
+      }
+      throw new Error(`${type} wallet not installed`);
     }
 
     const response = await provider.connect();
     return response.publicKey.toString();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Connect error:', error);
-    return null;
+    // Re-throw with useful message
+    if (error?.message?.includes('User rejected')) {
+      throw new Error('Connection cancelled');
+    }
+    throw error;
   }
 }
 
@@ -61,7 +71,7 @@ export async function signMessage(
 
     const encodedMessage = new TextEncoder().encode(message);
     const signedMessage = await provider.signMessage(encodedMessage, 'utf8');
-    
+
     return bs58.encode(signedMessage.signature);
   } catch (error) {
     console.error('Sign message error:', error);
@@ -124,10 +134,10 @@ export async function signAndSendTransaction(
     if (!provider) return null;
 
     const { signature } = await provider.signAndSendTransaction(transaction);
-    
+
     // Wait for confirmation
     const confirmation = await connection.confirmTransaction(signature, 'confirmed');
-    
+
     if (confirmation.value.err) {
       throw new Error('Transaction failed');
     }
