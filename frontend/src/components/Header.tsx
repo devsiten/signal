@@ -28,15 +28,32 @@ export function Header() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-transparent border-b border-border-subtle/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-gold to-accent-goldDark flex items-center justify-center shadow-glow-gold">
-                <span className="text-bg-primary font-display font-bold text-xl">H</span>
-              </div>
-              <span className="font-display font-semibold text-xl text-text-primary group-hover:text-accent-gold transition-colors hidden sm:block logo-animated">
-                Hussayn Alpha
-              </span>
-            </Link>
+            {/* Left side: Mobile menu button + Logo */}
+            <div className="flex items-center gap-2">
+              {/* Mobile menu button - left side near logo */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-text-secondary hover:text-text-primary"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-gold to-accent-goldDark flex items-center justify-center shadow-glow-gold">
+                  <span className="text-bg-primary font-display font-bold text-xl">H</span>
+                </div>
+                <span className="font-display font-semibold text-xl text-text-primary group-hover:text-accent-gold transition-colors hidden sm:block logo-animated">
+                  Hussayn Alpha
+                </span>
+              </Link>
+            </div>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8">
@@ -102,20 +119,6 @@ export function Header() {
                   {isConnecting ? 'Connecting...' : 'Connect Wallet'}
                 </button>
               )}
-
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-text-secondary hover:text-text-primary"
-              >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
             </div>
           </div>
         </div>
