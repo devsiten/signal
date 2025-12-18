@@ -200,6 +200,8 @@ export function useWallet() {
     setSubscription(null);
     setIsAdmin(false);
     addToast('info', 'Wallet disconnected');
+    // Redirect to home on manual disconnect
+    window.location.href = '/';
   }, [walletType, setWallet, setSubscription, setIsAdmin, addToast]);
 
   // Refresh subscription
