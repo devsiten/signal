@@ -18,6 +18,7 @@ export default function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const postId = parseInt(params.id as string, 10);
 
@@ -128,13 +129,15 @@ export default function PostPage() {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText((post as any).contract_address);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
                 }}
                 className="flex items-center gap-1 px-2 py-1 rounded bg-accent-gold/20 text-accent-gold text-xs hover:bg-accent-gold/30 transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                Copy
+                {copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
           )}
