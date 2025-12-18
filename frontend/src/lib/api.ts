@@ -73,7 +73,7 @@ export async function getSubscriptionStatus(
 export async function createPaymentReference(
   wallet: string
 ): Promise<ApiResponse<PaymentReference>> {
-  return fetchApi('/api/payment/create', {
+  return fetchApi('/api/payments/initiate', {
     method: 'POST',
     body: JSON.stringify({ wallet }),
   });
@@ -81,11 +81,34 @@ export async function createPaymentReference(
 
 export async function verifyPayment(
   reference: string,
-  txSignature: string
+  signature: string
 ): Promise<ApiResponse<PaymentVerification>> {
-  return fetchApi('/api/payment/verify', {
+  return fetchApi('/api/payments/verify', {
     method: 'POST',
-    body: JSON.stringify({ reference, txSignature }),
+    body: JSON.stringify({ reference, signature }),
+  });
+}
+
+export async function checkPaymentStatus(
+  reference?: string
+): Promise<ApiResponse<{
+  found: boolean;
+  reference?: string;
+  status?: 'pending' | 'completed' | 'expired';
+  amount?: number;
+  expiresAt?: string;
+  completedAt?: string;
+}>> {
+  const params = reference ? `?reference=${reference}` : '';
+  return fetchApi(`/api/payments/check-status${params}`);
+}
+
+export async function retryVerifyPayment(
+  reference: string
+): Promise<ApiResponse<{ success: boolean; error?: string; message?: string }>> {
+  return fetchApi('/api/payments/retry-verify', {
+    method: 'POST',
+    body: JSON.stringify({ reference }),
   });
 }
 
