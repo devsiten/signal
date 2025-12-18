@@ -129,7 +129,7 @@ export default function NewPostPage() {
         {/* Contract Address */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            Contract Address (optional)
+            Contract Address
           </label>
           <input
             type="text"
