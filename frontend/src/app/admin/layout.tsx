@@ -12,17 +12,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [initialCheck, setInitialCheck] = useState(true);
 
   useEffect(() => {
-    // Quick initial check - only on first render
+    // Wait for Zustand to hydrate from localStorage before checking auth
     if (initialCheck) {
       const timer = setTimeout(() => {
         setInitialCheck(false);
-      }, 500);
+      }, 1500); // Longer wait for hydration
       return () => clearTimeout(timer);
     }
   }, [initialCheck]);
 
   useEffect(() => {
-    if (!initialCheck && (!isConnected || !isAdmin)) {
+    // Only redirect if we're past initial loading AND definitely not connected/admin
+    // This prevents false redirects during hydration
+    if (!initialCheck && !isConnected && !isAdmin) {
       router.push('/');
     }
   }, [initialCheck, isConnected, isAdmin, router]);
