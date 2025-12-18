@@ -27,12 +27,6 @@ export async function connectWallet(type: 'phantom' | 'solflare'): Promise<strin
   try {
     const provider = type === 'phantom' ? getPhantomProvider() : getSolflareProvider();
     if (!provider) {
-      // Wallet extension not found - open install page
-      if (type === 'phantom') {
-        window.open('https://phantom.app/', '_blank');
-      } else {
-        window.open('https://solflare.com/', '_blank');
-      }
       throw new Error(`${type} wallet not installed`);
     }
 
