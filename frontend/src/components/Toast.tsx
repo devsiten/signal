@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useAppStore } from '@/stores/app';
 import { cn } from '@/lib/utils';
@@ -55,3 +55,4 @@ export function Toasts() {
     </div>
   );
 }
+

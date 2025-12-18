@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { getSettings, adminUpdateSettings } from '@/lib/api';
@@ -183,3 +183,4 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
+

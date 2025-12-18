@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -113,22 +113,22 @@ export default function AdminPostsPage() {
                   </div>
                   <div className="flex items-center gap-4 text-sm text-text-secondary">
                     <span>{formatMonthLabel(post.month)}</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span>{formatDate(post.created_at)}</span>
                     {(post as any).trade_result && (
                       <>
-                        <span>•</span>
+                        <span>â€¢</span>
                         <span className={cn(
                           'font-medium',
                           (post as any).trade_result === 'win' ? 'text-accent-emerald' : 'text-red-400'
                         )}>
-                          {(post as any).trade_result === 'win' ? '✓ WIN' : '✗ LOSE'}
+                          {(post as any).trade_result === 'win' ? 'âœ“ WIN' : 'âœ— LOSE'}
                         </span>
                       </>
                     )}
                     {post.images.length > 0 && (
                       <>
-                        <span>•</span>
+                        <span>â€¢</span>
                         <span>{post.images.length} image{post.images.length !== 1 ? 's' : ''}</span>
                       </>
                     )}
@@ -193,3 +193,4 @@ export default function AdminPostsPage() {
     </div>
   );
 }
+

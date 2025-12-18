@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 export const runtime = 'edge';
 
@@ -193,7 +193,7 @@ export default function ProfilePage() {
                                     {showRenewButton && (
                                         <div className="p-4 rounded-lg bg-accent-gold/10 border border-accent-gold/30 mb-4">
                                             <p className="text-accent-gold text-sm mb-3">
-                                                ⚠️ Your subscription expires soon! Renew now to avoid interruption.
+                                                âš ï¸ Your subscription expires soon! Renew now to avoid interruption.
                                             </p>
                                             <PaymentButton className="w-full" />
                                         </div>
@@ -233,3 +233,4 @@ export default function ProfilePage() {
         </div>
     );
 }
+

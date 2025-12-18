@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 
@@ -16,7 +16,7 @@ export function Footer() {
                 <span className="text-bg-primary font-display font-bold text-xl">H</span>
               </div>
               <span className="font-display font-semibold text-xl text-text-primary">
-                Hussayn Signal
+                Hussayn Alpha
               </span>
             </Link>
             <p className="text-text-secondary text-sm max-w-md leading-relaxed">
@@ -84,7 +84,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border-subtle flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-text-muted text-sm">
-            © {currentYear} Hussayn Signal. All rights reserved.
+            Â© {currentYear} Hussayn Alpha. All rights reserved.
           </p>
           <p className="text-text-muted text-xs">
             Trading involves risk. Past performance is not indicative of future results.
@@ -94,3 +94,4 @@ export function Footer() {
     </footer>
   );
 }
+

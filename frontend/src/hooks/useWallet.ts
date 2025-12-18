@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useAppStore } from '@/stores/app';
@@ -122,7 +122,7 @@ export function useWallet() {
 
       // Create sign message
       const timestamp = Date.now();
-      const message = `Sign this message to authenticate with Hussayn Signal.\n\nWallet: ${publicKey}\nTimestamp: ${timestamp}`;
+      const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${publicKey}\nTimestamp: ${timestamp}`;
 
       const signature = await signMessage(message, type);
       if (!signature) {
@@ -198,3 +198,4 @@ export function useWallet() {
     refreshSubscription,
   };
 }
+

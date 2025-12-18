@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 
 export default function DisclaimerPage() {
   return (
@@ -19,7 +19,7 @@ export default function DisclaimerPage() {
           <section className="mb-10">
             <h2>Not Financial Advice</h2>
             <p>
-              The content provided on Hussayn Signal, including but not limited to trading signals,
+              The content provided on Hussayn Alpha, including but not limited to trading signals,
               market analysis, and educational content, is for informational purposes only and
               should not be construed as financial, investment, or trading advice.
             </p>
@@ -88,7 +88,7 @@ export default function DisclaimerPage() {
           <section className="mb-10">
             <h2>No Liability</h2>
             <p>
-              Hussayn Signal and its operators shall not be held liable for any losses, damages,
+              Hussayn Alpha and its operators shall not be held liable for any losses, damages,
               or claims arising from:
             </p>
             <ul>
@@ -129,10 +129,11 @@ export default function DisclaimerPage() {
         {/* Back Link */}
         <div className="mt-10 text-center">
           <Link href="/" className="text-accent-gold hover:text-accent-goldLight transition-colors">
-            ← Back to Home
+            â† Back to Home
           </Link>
         </div>
       </div>
     </div>
   );
 }
+

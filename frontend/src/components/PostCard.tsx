@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { formatDate, cn } from '@/lib/utils';
@@ -76,11 +76,11 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
           
           {isLocked ? (
             <span className="text-accent-gold text-sm font-medium">
-              Unlock with Premium →
+              Unlock with Premium â†’
             </span>
           ) : (
             <span className="text-text-muted text-sm group-hover:text-accent-gold transition-colors">
-              Read more →
+              Read more â†’
             </span>
           )}
         </div>
@@ -88,3 +88,4 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
     </Link>
   );
 }
+

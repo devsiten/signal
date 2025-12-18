@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -34,7 +34,7 @@ export function Header() {
                 <span className="text-bg-primary font-display font-bold text-xl">H</span>
               </div>
               <span className="font-display font-semibold text-xl text-text-primary group-hover:text-accent-gold transition-colors hidden sm:block">
-                Hussayn Signal
+                Hussayn Alpha
               </span>
             </Link>
 
@@ -238,3 +238,4 @@ export function Header() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+﻿import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import bs58 from 'bs58';
 
 // Solana RPC endpoint
@@ -154,3 +154,4 @@ export function isValidSolanaAddress(address: string): boolean {
     return false;
   }
 }
+

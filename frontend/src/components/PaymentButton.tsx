@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useWallet } from '@/hooks/useWallet';
@@ -136,3 +136,4 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
     </button>
   );
 }
+

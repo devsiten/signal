@@ -180,7 +180,7 @@ export default function PostPage() {
               href="/"
               className="text-text-secondary hover:text-accent-gold transition-colors"
             >
-              ← All Signals
+              ← All Calls
             </Link>
             <Link
               href="/wins"

@@ -1,4 +1,4 @@
-// User types
+﻿// User types
 export interface User {
   wallet: string;
   created_at: string;
@@ -112,3 +112,4 @@ export interface Toast {
   type: ToastType;
   message: string;
 }
+

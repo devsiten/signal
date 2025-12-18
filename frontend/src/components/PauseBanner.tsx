@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useAppStore } from '@/stores/app';
 
@@ -20,3 +20,4 @@ export function PauseBanner() {
     </div>
   );
 }
+

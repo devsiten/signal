@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useAppStore } from '@/stores/app';
 import { formatMonthLabel, cn } from '@/lib/utils';
@@ -34,3 +34,4 @@ export function MonthFilter({ months }: MonthFilterProps) {
     </div>
   );
 }
+

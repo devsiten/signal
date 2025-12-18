@@ -1,4 +1,4 @@
-// Date utilities
+﻿// Date utilities
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -113,3 +113,4 @@ export function debounce<T extends (...args: any[]) => any>(
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+

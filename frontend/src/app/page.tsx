@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -60,7 +60,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-text-secondary mb-10 leading-relaxed animate-slide-up stagger-1">
-              Hussayn Signal drops the alpha that actually prints. No fluff, no hopium —
+              Hussayn Alpha drops the alpha that actually prints. No fluff, no hopium â€”
               just battle-tested calls from a Degen who&apos;s seen it all.
             </p>
 
@@ -106,9 +106,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
             <div>
-              <h2 className="font-display text-3xl font-bold text-text-primary mb-2">Latest Signals</h2>
+              <h2 className="font-display text-3xl font-bold text-text-primary mb-2">Latest Calls</h2>
               <p className="text-text-secondary">
-                {isPremium ? 'Full access to all premium content' : 'Preview our latest calls — unlock full access with Premium'}
+                {isPremium ? 'Full access to all premium content' : 'Preview the latest calls. Unlock full access with Premium'}
               </p>
             </div>
             <MonthFilter months={months} />
@@ -152,12 +152,12 @@ export default function HomePage() {
                   Ready to Stack Some Wins?
                 </h2>
                 <p className="text-text-secondary text-lg mb-8 max-w-xl mx-auto">
-                  Join the Hussayn Signal fam and get the edge that degens dream about.
+                  Join the Hussayn Alpha fam and get the edge that degens dream about.
                   Premium calls, full transparency, real results.
                 </p>
                 <PaymentButton className="px-10 py-4 text-lg" />
                 <p className="mt-4 text-text-muted text-sm">
-                  30-day access • Instant activation • No refunds
+                  30-day access â€¢ Instant activation â€¢ No refunds
                 </p>
               </div>
             </div>
@@ -167,3 +167,4 @@ export default function HomePage() {
     </div>
   );
 }
+

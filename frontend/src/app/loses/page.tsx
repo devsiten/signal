@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useWallet } from '@/hooks/useWallet';
@@ -102,3 +102,4 @@ export default function LosesPage() {
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ApiResponse,
   Post,
   PostPreview,
@@ -217,3 +217,4 @@ export async function setUsername(username: string): Promise<ApiResponse<{ succe
     body: JSON.stringify({ username }),
   });
 }
+

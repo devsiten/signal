@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import Link from 'next/link';
@@ -50,7 +50,7 @@ export default function PricingPage() {
               <div>
                 <h3 className="font-display text-lg font-semibold text-text-primary">Active Premium Subscription</h3>
                 <p className="text-text-secondary">
-                  {subscription.daysRemaining} days remaining • Expires {new Date(subscription.expiresAt!).toLocaleDateString()}
+                  {subscription.daysRemaining} days remaining â€¢ Expires {new Date(subscription.expiresAt!).toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -159,10 +159,11 @@ export default function PricingPage() {
         {/* Disclaimer Link */}
         <div className="mt-12 text-center">
           <Link href="/disclaimer" className="text-text-muted hover:text-text-secondary transition-colors text-sm">
-            Read our full disclaimer →
+            Read our full disclaimer â†’
           </Link>
         </div>
       </div>
     </div>
   );
 }
+
