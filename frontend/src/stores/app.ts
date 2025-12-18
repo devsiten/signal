@@ -78,6 +78,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         wallet: state.wallet,
         walletType: state.walletType,
+        settings: state.settings,
       }),
     }
   )
