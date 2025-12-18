@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/hooks/useWallet';
 import { useAppStore } from '@/stores/app';
-import { createPaymentReference, verifyPayment, checkPaymentStatus, retryVerifyPayment } from '@/lib/api';
+import { createPaymentReference, verifyPayment, checkPaymentStatus, retryVerifyPayment, getSettings } from '@/lib/api';
 import { createPaymentTransaction, signAndSendTransaction } from '@/lib/wallet';
 import { cn } from '@/lib/utils';
 
@@ -14,11 +14,22 @@ interface PaymentButtonProps {
 
 export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
   const { wallet, walletType, isConnected, refreshSubscription } = useWallet();
-  const { settings, addToast } = useAppStore();
+  const { settings, setSettings, addToast } = useAppStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<'idle' | 'creating' | 'signing' | 'verifying' | 'checking'>('idle');
   const [pendingReference, setPendingReference] = useState<string | null>(null);
   const [showCheckStatus, setShowCheckStatus] = useState(false);
+
+  // Fetch fresh settings on mount to ensure pause state is current
+  useEffect(() => {
+    async function loadSettings() {
+      const response = await getSettings();
+      if (response.success && response.data) {
+        setSettings(response.data);
+      }
+    }
+    loadSettings();
+  }, [setSettings]);
 
   const isPaused = settings?.is_paused;
   const price = settings?.price_sol || 0.5;
