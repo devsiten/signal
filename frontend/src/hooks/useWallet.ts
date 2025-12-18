@@ -43,9 +43,23 @@ export function useWallet() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Check session on mount
+  // Check session on mount (with auto-logout check)
   useEffect(() => {
+    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours
+
     const checkSession = async () => {
+      // First check if we should auto-logout due to inactivity
+      const lastActivity = localStorage.getItem('lastActivity');
+      if (lastActivity) {
+        const elapsed = Date.now() - parseInt(lastActivity, 10);
+        if (elapsed >= INACTIVITY_TIMEOUT) {
+          // Session expired due to inactivity - don't restore, clear everything
+          localStorage.removeItem('lastActivity');
+          await logout();
+          return; // Don't restore session
+        }
+      }
+
       const response = await getSession();
       if (response.success && response.data) {
         setWallet(response.data.wallet, walletType);
@@ -57,8 +71,10 @@ export function useWallet() {
           setSubscription(subResponse.data);
         }
 
-        // Set initial activity time
-        localStorage.setItem('lastActivity', Date.now().toString());
+        // Only set activity time if restoring valid session
+        if (!lastActivity) {
+          localStorage.setItem('lastActivity', Date.now().toString());
+        }
       }
     };
 
