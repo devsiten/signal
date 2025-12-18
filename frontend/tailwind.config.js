@@ -15,9 +15,9 @@ module.exports = {
           card: '#15151f',
         },
         accent: {
-          gold: '#d4af37',
-          goldDark: '#b8960f',
-          goldLight: '#f4d03f',
+          gold: '#00d9ff',
+          goldDark: '#00b8d9',
+          goldLight: '#5ce1ff',
           emerald: '#00ff88',
           emeraldDark: '#00cc6a',
         },
@@ -42,7 +42,7 @@ module.exports = {
         'mesh-gradient': 'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #1a1a25 100%)',
       },
       boxShadow: {
-        'glow-gold': '0 0 40px rgba(212, 175, 55, 0.15)',
+        'glow-gold': '0 0 40px rgba(0, 217, 255, 0.15)',
         'glow-emerald': '0 0 40px rgba(0, 255, 136, 0.1)',
         'card': '0 4px 24px rgba(0, 0, 0, 0.4)',
       },

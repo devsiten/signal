@@ -38,10 +38,10 @@ body::before {
   left: -50%;
   width: 200%;
   height: 200%;
-  background-image: 
-    radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.02) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 217, 255, 0.02) 0%, transparent 60%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   opacity: 0.5;
   pointer-events: none;
@@ -51,15 +51,20 @@ body::before {
 
 /* Background floating animation */
 @keyframes backgroundFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
+
   25% {
     transform: translate(2%, 1%) rotate(0.5deg);
   }
+
   50% {
     transform: translate(0, 2%) rotate(0deg);
   }
+
   75% {
     transform: translate(-2%, 1%) rotate(-0.5deg);
   }
@@ -67,12 +72,15 @@ body::before {
 
 /* Logo glow animation */
 @keyframes logoGlow {
-  0%, 100% {
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3), 0 0 20px rgba(212, 175, 55, 0.1);
+
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.3), 0 0 20px rgba(0, 217, 255, 0.1);
     filter: brightness(1);
   }
+
   50% {
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.2);
+    text-shadow: 0 0 20px rgba(0, 217, 255, 0.5), 0 0 40px rgba(0, 217, 255, 0.2);
     filter: brightness(1.1);
   }
 }
@@ -88,6 +96,7 @@ body::before {
     transform: translateY(30px);
     filter: blur(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -96,9 +105,12 @@ body::before {
 }
 
 @keyframes heroGradient {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -135,7 +147,7 @@ body::before {
 
 /* Selection */
 ::selection {
-  background: rgba(212, 175, 55, 0.3);
+  background: rgba(0, 217, 255, 0.3);
   color: #ffffff;
 }
 
@@ -151,7 +163,7 @@ a {
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-accent-gold to-accent-goldLight text-bg-primary hover:shadow-glow-gold;
+  @apply bg-white text-bg-primary hover:bg-gray-100 hover:shadow-glow-gold;
 }
 
 .btn-secondary {
@@ -185,12 +197,10 @@ a {
 
 /* Shimmer effect */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(212, 175, 55, 0) 0%,
-    rgba(212, 175, 55, 0.1) 50%,
-    rgba(212, 175, 55, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(212, 175, 55, 0) 0%,
+      rgba(212, 175, 55, 0.1) 50%,
+      rgba(212, 175, 55, 0) 100%);
   background-size: 200% 100%;
   animation: shimmer 2s linear infinite;
 }
@@ -203,14 +213,30 @@ a {
 }
 
 /* Stagger animations */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
 
 /* Input styles */
-input, textarea, select {
+input,
+textarea,
+select {
   @apply bg-bg-tertiary border border-border-subtle rounded-lg px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-gold/50 transition-colors;
 }
 
@@ -225,9 +251,17 @@ input, textarea, select {
   @apply text-text-primary font-display font-semibold mb-4;
 }
 
-.prose-content h1 { @apply text-3xl; }
-.prose-content h2 { @apply text-2xl; }
-.prose-content h3 { @apply text-xl; }
+.prose-content h1 {
+  @apply text-3xl;
+}
+
+.prose-content h2 {
+  @apply text-2xl;
+}
+
+.prose-content h3 {
+  @apply text-xl;
+}
 
 .prose-content p {
   @apply mb-4;
