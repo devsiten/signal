@@ -114,12 +114,7 @@ export async function retryVerifyPayment(
 
 // Settings
 export async function getSettings(): Promise<ApiResponse<SiteSettings>> {
-  return fetchApi('/api/settings', {
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-    },
-  });
+  return fetchApi('/api/settings');
 }
 
 // Posts (Public)
