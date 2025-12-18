@@ -36,12 +36,19 @@ body {
 }
 
 /* Text visibility enhancements */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* Navigation and header text - stronger shadow for transparent header */
-header, nav {
+/* Navigation, header and footer text - stronger shadow for transparency */
+header,
+nav,
+footer {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
