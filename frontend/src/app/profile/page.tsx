@@ -139,29 +139,25 @@ export default function ProfilePage() {
                             <h2 className="font-display text-lg font-semibold text-text-primary mb-4">
                                 Username
                             </h2>
-                            {username ? (
-                                <p className="text-text-primary text-lg">@{username}</p>
-                            ) : (
-                                <div className="flex gap-3">
-                                    <input
-                                        type="text"
-                                        value={newUsername}
-                                        onChange={(e) => setNewUsername(e.target.value)}
-                                        placeholder="Choose a username"
-                                        className="flex-1"
-                                        maxLength={20}
-                                    />
-                                    <button
-                                        onClick={handleSaveUsername}
-                                        disabled={savingUsername || !newUsername.trim()}
-                                        className="btn btn-primary"
-                                    >
-                                        {savingUsername ? 'Saving...' : 'Save'}
-                                    </button>
-                                </div>
-                            )}
+                            <div className="flex gap-3">
+                                <input
+                                    type="text"
+                                    value={newUsername || username}
+                                    onChange={(e) => setNewUsername(e.target.value)}
+                                    placeholder="Choose a username"
+                                    className="flex-1"
+                                    maxLength={20}
+                                />
+                                <button
+                                    onClick={handleSaveUsername}
+                                    disabled={savingUsername || (!newUsername.trim() || newUsername.trim() === username)}
+                                    className="btn btn-primary"
+                                >
+                                    {savingUsername ? 'Saving...' : username ? 'Change' : 'Save'}
+                                </button>
+                            </div>
                             <p className="text-xs text-text-muted mt-2">
-                                Usernames must be unique. Once set, it cannot be changed.
+                                Usernames must be unique.
                             </p>
                         </div>
 
