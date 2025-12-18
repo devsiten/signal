@@ -78,7 +78,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         wallet: state.wallet,
         walletType: state.walletType,
-        // Don't persist settings - always fetch fresh from API
+        settings: state.settings,
       }),
     }
   )
