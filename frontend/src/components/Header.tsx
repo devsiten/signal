@@ -89,7 +89,7 @@ export function Header() {
                       </span>
                     )}
                     <span className="text-sm text-text-primary font-medium">
-                      {isAdmin ? 'Dashboard' : 'Profile'}
+                      {isAdmin ? 'Admin' : 'User'}
                     </span>
                   </Link>
                 </div>
