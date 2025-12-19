@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@/hooks/useWallet';
 import { useAppStore } from '@/stores/app';
@@ -10,12 +10,15 @@ import { MonthFilter } from '@/components/MonthFilter';
 import { PaymentButton } from '@/components/PaymentButton';
 import type { PostPreview, MonthGroup } from '@/types';
 
+const LAST_VISIT_KEY = 'hussayn_last_visit';
+
 export default function HomePage() {
   const { isPremium, isConnected, isAdmin } = useWallet();
-  const { selectedMonth, setSettings, settings } = useAppStore();
+  const { selectedMonth, setSettings, settings, addToast } = useAppStore();
   const [posts, setPosts] = useState<PostPreview[]>([]);
   const [months, setMonths] = useState<MonthGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasCheckedNewPosts = useRef(false);
 
   useEffect(() => {
     async function loadData() {
@@ -30,15 +33,41 @@ export default function HomePage() {
 
       const postsResponse = await getPosts(selectedMonth || undefined);
       if (postsResponse.success && postsResponse.data) {
-        setPosts(postsResponse.data.posts);
+        const fetchedPosts = postsResponse.data.posts;
+        setPosts(fetchedPosts);
         setMonths(postsResponse.data.months);
+
+        // Check for new posts since last visit (only once per session)
+        if (!hasCheckedNewPosts.current && fetchedPosts.length > 0) {
+          hasCheckedNewPosts.current = true;
+          const lastVisit = localStorage.getItem(LAST_VISIT_KEY);
+          const latestPost = fetchedPosts[0]; // Posts are ordered by newest first
+
+          if (lastVisit && latestPost) {
+            const lastVisitDate = new Date(lastVisit);
+            const latestPostDate = new Date(latestPost.created_at);
+
+            if (latestPostDate > lastVisitDate) {
+              // Count how many new posts
+              const newPostCount = fetchedPosts.filter(
+                post => new Date(post.created_at) > lastVisitDate
+              ).length;
+
+              addToast('info', `🔥 ${newPostCount} new post${newPostCount > 1 ? 's' : ''} since your last visit!`);
+            }
+          }
+
+          // Update last visit timestamp
+          localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+        }
       }
 
       setLoading(false);
     }
 
     loadData();
-  }, [selectedMonth, setSettings]);
+  }, [selectedMonth, setSettings, addToast]);
+
 
   return (
     <div className="min-h-screen">
