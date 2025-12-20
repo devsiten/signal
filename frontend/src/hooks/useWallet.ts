@@ -42,9 +42,10 @@ export function useWallet() {
   const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
   const solflareWallet = wallets.find(w => w.adapter.name === 'Solflare');
 
-  // Check if actually installed
-  const hasPhantom = phantomWallet?.readyState === 'Installed' || phantomWallet?.readyState === 'Loadable';
-  const hasSolflare = solflareWallet?.readyState === 'Installed' || solflareWallet?.readyState === 'Loadable';
+  // Check if actually installed - only 'Installed' means the extension is present
+  // 'Loadable' just means the adapter can be loaded, not that the wallet is installed
+  const hasPhantom = phantomWallet?.readyState === 'Installed';
+  const hasSolflare = solflareWallet?.readyState === 'Installed';
 
   // Track if we've already checked session for this wallet
   const [sessionCheckedFor, setSessionCheckedFor] = useState<string | null>(null);
