@@ -46,44 +46,69 @@ export function useWallet() {
   const hasPhantom = phantomWallet?.readyState === 'Installed' || phantomWallet?.readyState === 'Loadable';
   const hasSolflare = solflareWallet?.readyState === 'Installed' || solflareWallet?.readyState === 'Loadable';
 
+  // Track if we've already checked session for this wallet
+  const [sessionCheckedFor, setSessionCheckedFor] = useState<string | null>(null);
+
   // When wallet connects, check if we need to authenticate
   useEffect(() => {
     if (connected && walletAddress) {
       // If wallet address matches our stored wallet, we're already authenticated
       if (wallet === walletAddress) {
         setNeedsAuth(false);
-      } else {
-        // Need to authenticate this new wallet
+      } else if (sessionCheckedFor === walletAddress) {
+        // Already checked session for this wallet and it failed - need auth
         setNeedsAuth(true);
+      } else {
+        // Check if this wallet has a valid session before asking for auth
+        const checkExistingSession = async () => {
+          const response = await getSession();
+          if (response.success && response.data && response.data.wallet === walletAddress) {
+            // Session is valid for this wallet - sync state without requiring re-auth
+            setWallet(response.data.wallet, adapterWallet?.adapter?.name?.toLowerCase() as 'phantom' | 'solflare' || null);
+            setIsAdmin(response.data.isAdmin);
+            setNeedsAuth(false);
+
+            // Also refresh subscription
+            const subResponse = await getSubscriptionStatus(response.data.wallet);
+            if (subResponse.success && subResponse.data) {
+              setSubscription(subResponse.data);
+            }
+          } else {
+            // No valid session - need to authenticate
+            setNeedsAuth(true);
+          }
+          setSessionCheckedFor(walletAddress);
+        };
+        checkExistingSession();
       }
     } else {
       setNeedsAuth(false);
     }
-  }, [connected, walletAddress, wallet]);
+  }, [connected, walletAddress, wallet, sessionCheckedFor, adapterWallet, setWallet, setIsAdmin, setSubscription]);
 
-  // Clear state when disconnected
+  // Clear state when disconnected - but NOT on initial page load
+  // The wallet adapter takes time to reconnect on page refresh
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   useEffect(() => {
-    if (!connected && wallet) {
+    // Mark as initialized after a short delay to allow autoConnect to work
+    const timer = setTimeout(() => setHasInitialized(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Only logout if:
+    // 1. We've passed the initial load period
+    // 2. Wallet adapter is disconnected
+    // 3. We have a stored wallet (meaning user was previously connected)
+    // 4. Wallet adapter is not currently trying to connect
+    if (hasInitialized && !connected && !connecting && wallet) {
       handleLogout();
     }
-  }, [connected, wallet]);
+  }, [connected, connecting, wallet, hasInitialized]);
 
-  // Check session on mount
-  useEffect(() => {
-    const checkSession = async () => {
-      const response = await getSession();
-      if (response.success && response.data) {
-        setWallet(response.data.wallet, walletType);
-        setIsAdmin(response.data.isAdmin);
-
-        const subResponse = await getSubscriptionStatus(response.data.wallet);
-        if (subResponse.success && subResponse.data) {
-          setSubscription(subResponse.data);
-        }
-      }
-    };
-    checkSession();
-  }, []);
+  // Note: Session check is now handled in the connection effect above
+  // to prevent race conditions with autoConnect
 
   // MANUAL auth - called when user clicks "Sign to Continue"
   const authenticateWallet = useCallback(async () => {
