@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@/hooks/useWallet';
-import { cn } from '@/lib/utils';
 
 export function Header() {
   const {
@@ -11,15 +10,12 @@ export function Header() {
     formattedWallet,
     isConnected,
     isConnecting,
-    hasPhantom,
-    hasSolflare,
     isPremium,
     isAdmin,
     connect,
     disconnect,
   } = useWallet();
 
-  const [showWalletModal, setShowWalletModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -112,7 +108,7 @@ export function Header() {
                 </div>
               ) : (
                 <button
-                  onClick={() => setShowWalletModal(true)}
+                  onClick={connect}
                   disabled={isConnecting}
                   className="btn btn-primary"
                 >
@@ -167,83 +163,8 @@ export function Header() {
         )}
       </header>
 
-      {/* Wallet Selection Modal */}
-      {showWalletModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          onClick={() => setShowWalletModal(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl bg-bg-card border border-border-subtle p-6 shadow-2xl animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-display text-2xl font-semibold text-text-primary mb-2">
-              Connect Wallet
-            </h2>
-            <p className="text-text-secondary mb-6">
-              Choose your preferred Solana wallet to continue.
-            </p>
-
-            <div className="space-y-3">
-              {/* Phantom */}
-              <button
-                onClick={() => {
-                  connect('phantom');
-                  setShowWalletModal(false);
-                }}
-                disabled={!hasPhantom || isConnecting}
-                className={cn(
-                  'wallet-btn w-full justify-between',
-                  hasPhantom
-                    ? 'bg-bg-tertiary border border-border-subtle hover:border-accent-gold/30'
-                    : 'bg-bg-tertiary/50 border border-border-subtle opacity-50 cursor-not-allowed'
-                )}
-              >
-                <span className="flex items-center gap-3">
-                  <img src="https://phantom.app/img/logo.png" alt="Phantom" className="w-8 h-8 rounded-lg" />
-                  <span className="font-medium text-text-primary">Phantom</span>
-                </span>
-                {!hasPhantom && (
-                  <span className="text-xs text-text-muted">Not installed</span>
-                )}
-              </button>
-
-              {/* Solflare */}
-              <button
-                onClick={() => {
-                  connect('solflare');
-                  setShowWalletModal(false);
-                }}
-                disabled={!hasSolflare || isConnecting}
-                className={cn(
-                  'wallet-btn w-full justify-between',
-                  hasSolflare
-                    ? 'bg-bg-tertiary border border-border-subtle hover:border-accent-gold/30'
-                    : 'bg-bg-tertiary/50 border border-border-subtle opacity-50 cursor-not-allowed'
-                )}
-              >
-                <span className="flex items-center gap-3">
-                  <img src="https://solflare.com/favicon.ico" alt="Solflare" className="w-8 h-8 rounded-lg" />
-                  <span className="font-medium text-text-primary">Solflare</span>
-                </span>
-                {!hasSolflare && (
-                  <span className="text-xs text-text-muted">Not installed</span>
-                )}
-              </button>
-            </div>
-
-            <button
-              onClick={() => setShowWalletModal(false)}
-              className="mt-6 w-full py-3 text-text-secondary hover:text-text-primary transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Click outside to close menus */}
-      {(showUserMenu || showWalletModal) && (
+      {showUserMenu && (
         <div
           className="fixed inset-0 z-30"
           onClick={() => {
@@ -254,4 +175,3 @@ export function Header() {
     </>
   );
 }
-

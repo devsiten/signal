@@ -1,19 +1,24 @@
 ﻿'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useAppStore } from '@/stores/app';
-import {
-  connectWallet,
-  disconnectWallet,
-  signMessage,
-  getPhantomProvider,
-  getSolflareProvider,
-  formatWallet,
-} from '@/lib/wallet';
 import { verifyWallet, getSession, logout, getSubscriptionStatus } from '@/lib/api';
-import type { WalletType } from '@/types';
+import { formatWallet, signMessageWithWallet } from '@/lib/wallet';
 
 export function useWallet() {
+  const {
+    wallet: adapterWallet,
+    publicKey,
+    connected,
+    connecting,
+    disconnect: adapterDisconnect,
+    signMessage: adapterSignMessage,
+  } = useSolanaWallet();
+
+  const { setVisible } = useWalletModal();
+
   const {
     wallet,
     walletType,
@@ -25,38 +30,31 @@ export function useWallet() {
     addToast,
   } = useAppStore();
 
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [hasPhantom, setHasPhantom] = useState(false);
-  const [hasSolflare, setHasSolflare] = useState(false);
+  const walletAddress = publicKey?.toBase58() || null;
 
-  // Check wallet availability
+  // Sync wallet adapter state with app store
   useEffect(() => {
-    const checkWallets = () => {
-      setHasPhantom(!!getPhantomProvider());
-      setHasSolflare(!!getSolflareProvider());
-    };
+    if (connected && walletAddress && !wallet) {
+      // Wallet connected via adapter but not authenticated yet
+      authenticateWallet(walletAddress);
+    } else if (!connected && wallet) {
+      // Wallet disconnected
+      handleLogout();
+    }
+  }, [connected, walletAddress, wallet]);
 
-    checkWallets();
-
-    // Re-check after a delay for slow-loading extensions
-    const timeout = setTimeout(checkWallets, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // Check session on mount (with auto-logout check)
+  // Check session on mount
   useEffect(() => {
     const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours
 
     const checkSession = async () => {
-      // First check if we should auto-logout due to inactivity
       const lastActivity = localStorage.getItem('lastActivity');
       if (lastActivity) {
         const elapsed = Date.now() - parseInt(lastActivity, 10);
         if (elapsed >= INACTIVITY_TIMEOUT) {
-          // Session expired due to inactivity - don't restore, clear everything
           localStorage.removeItem('lastActivity');
           await logout();
-          return; // Don't restore session
+          return;
         }
       }
 
@@ -65,13 +63,11 @@ export function useWallet() {
         setWallet(response.data.wallet, walletType);
         setIsAdmin(response.data.isAdmin);
 
-        // Get subscription status
         const subResponse = await getSubscriptionStatus(response.data.wallet);
         if (subResponse.success && subResponse.data) {
           setSubscription(subResponse.data);
         }
 
-        // Only set activity time if restoring valid session
         if (!lastActivity) {
           localStorage.setItem('lastActivity', Date.now().toString());
         }
@@ -85,124 +81,108 @@ export function useWallet() {
   useEffect(() => {
     if (!wallet) return;
 
-    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-    const CHECK_INTERVAL = 30 * 1000; // Check every 30 seconds
+    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000;
+    const CHECK_INTERVAL = 30 * 1000;
 
-    // Check if should auto-logout (runs immediately on page load)
     const checkAndLogout = async () => {
       const lastActivity = localStorage.getItem('lastActivity');
       if (lastActivity) {
         const elapsed = Date.now() - parseInt(lastActivity, 10);
         if (elapsed >= INACTIVITY_TIMEOUT) {
-          // Auto-logout
-          if (walletType) {
-            await disconnectWallet(walletType);
-          }
-          await logout();
-          setWallet(null, null);
-          setSubscription(null);
-          setIsAdmin(false);
-          localStorage.removeItem('lastActivity');
-          // Don't redirect - let user stay on current page
+          await handleLogout();
           return true;
         }
       }
       return false;
     };
 
-    // Check immediately on page load
     checkAndLogout();
 
-    // Update last activity on user interactions
     const updateActivity = () => {
       localStorage.setItem('lastActivity', Date.now().toString());
     };
 
-    // Track activity events
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
     events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
 
-    // Check for inactivity periodically
     const interval = setInterval(checkAndLogout, CHECK_INTERVAL);
 
     return () => {
       events.forEach(event => window.removeEventListener(event, updateActivity));
       clearInterval(interval);
     };
-  }, [wallet, walletType, setWallet, setSubscription, setIsAdmin]);
+  }, [wallet]);
 
-  // Connect and authenticate
-  const connect = useCallback(async (type: WalletType) => {
-    if (isConnecting) return;
-
-    setIsConnecting(true);
+  // Authenticate wallet with backend
+  const authenticateWallet = async (address: string) => {
     try {
-      let publicKey: string | null = null;
-      try {
-        publicKey = await connectWallet(type);
-      } catch (err: any) {
-        addToast('error', err?.message || 'Failed to connect wallet');
+      if (!adapterSignMessage) {
+        addToast('error', 'Wallet does not support message signing');
         return;
       }
 
-      if (!publicKey) {
-        addToast('error', 'Failed to connect wallet');
-        return;
-      }
-
-      // Create sign message
       const timestamp = Date.now();
-      const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${publicKey}\nTimestamp: ${timestamp}`;
+      const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${address}\nTimestamp: ${timestamp}`;
 
-      const signature = await signMessage(message, type);
-      if (!signature) {
-        addToast('error', 'Failed to sign message');
-        return;
-      }
+      const encodedMessage = new TextEncoder().encode(message);
+      const signatureBytes = await adapterSignMessage(encodedMessage);
 
-      // Verify with backend
-      const response = await verifyWallet(publicKey, signature, message);
+      // Convert to base58
+      const bs58 = await import('bs58');
+      const signature = bs58.default.encode(signatureBytes);
+
+      const response = await verifyWallet(address, signature, message);
       if (!response.success) {
         addToast('error', response.error || 'Authentication failed');
         return;
       }
 
-      setWallet(publicKey, type);
+      const walletName = adapterWallet?.adapter?.name?.toLowerCase() || 'phantom';
+      setWallet(address, walletName as 'phantom' | 'solflare');
 
-      // Get session info
       const sessionResponse = await getSession();
       if (sessionResponse.success && sessionResponse.data) {
         setIsAdmin(sessionResponse.data.isAdmin);
       }
 
-      // Get subscription status
-      const subResponse = await getSubscriptionStatus(publicKey);
+      const subResponse = await getSubscriptionStatus(address);
       if (subResponse.success && subResponse.data) {
         setSubscription(subResponse.data);
       }
 
+      localStorage.setItem('lastActivity', Date.now().toString());
       addToast('success', 'Wallet connected');
     } catch (error) {
-      console.error('Connect error:', error);
-      addToast('error', 'Connection failed');
-    } finally {
-      setIsConnecting(false);
+      console.error('Authentication error:', error);
+      addToast('error', 'Failed to authenticate wallet');
     }
-  }, [isConnecting, setWallet, setIsAdmin, setSubscription, addToast]);
+  };
 
-  // Disconnect
-  const disconnect = useCallback(async () => {
-    if (walletType) {
-      await disconnectWallet(walletType);
-    }
+  // Open wallet modal (works on desktop AND mobile)
+  const connect = useCallback(() => {
+    setVisible(true);
+  }, [setVisible]);
+
+  // Handle logout
+  const handleLogout = async () => {
     await logout();
     setWallet(null, null);
     setSubscription(null);
     setIsAdmin(false);
+    localStorage.removeItem('lastActivity');
+  };
+
+  // Disconnect
+  const disconnect = useCallback(async () => {
+    try {
+      await adapterDisconnect();
+    } catch (e) {
+      console.error('Disconnect error:', e);
+    }
+    await handleLogout();
     addToast('info', 'Wallet disconnected');
-    // Redirect to home on manual disconnect
     window.location.href = '/';
-  }, [walletType, setWallet, setSubscription, setIsAdmin, addToast]);
+  }, [adapterDisconnect, addToast]);
 
   // Refresh subscription
   const refreshSubscription = useCallback(async () => {
@@ -219,15 +199,18 @@ export function useWallet() {
     walletType,
     formattedWallet: wallet ? formatWallet(wallet) : null,
     isConnected: !!wallet,
-    isConnecting,
-    hasPhantom,
-    hasSolflare,
+    isConnecting: connecting,
+    hasPhantom: true, // Always true - adapter handles availability
+    hasSolflare: true, // Always true - adapter handles availability
     subscription,
     isAdmin,
     isPremium: subscription?.isActive || false,
     connect,
     disconnect,
     refreshSubscription,
+    // Expose adapter for payment transactions
+    adapterWallet,
+    publicKey,
+    signMessage: adapterSignMessage,
   };
 }
-

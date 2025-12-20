@@ -1,11 +1,15 @@
 ﻿'use client';
 
 import { useState, useEffect } from 'react';
+import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import { useWallet } from '@/hooks/useWallet';
 import { useAppStore } from '@/stores/app';
 import { createPaymentReference, verifyPayment, checkPaymentStatus, retryVerifyPayment, getSettings } from '@/lib/api';
-import { createPaymentTransaction, signAndSendTransaction } from '@/lib/wallet';
 import { cn } from '@/lib/utils';
+
+const TREASURY_WALLET = process.env.NEXT_PUBLIC_TREASURY_WALLET || '';
 
 interface PaymentButtonProps {
   className?: string;
@@ -13,7 +17,9 @@ interface PaymentButtonProps {
 }
 
 export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
-  const { wallet, walletType, isConnected, refreshSubscription } = useWallet();
+  const { wallet, isConnected, refreshSubscription } = useWallet();
+  const { publicKey, sendTransaction } = useSolanaWallet();
+  const { connection } = useConnection();
   const { settings, setSettings, addToast } = useAppStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<'idle' | 'creating' | 'signing' | 'verifying' | 'checking'>('idle');
@@ -58,7 +64,7 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
   }, [wallet]);
 
   const handlePayment = async () => {
-    if (!wallet || !walletType || isProcessing || isPaused) return;
+    if (!wallet || !publicKey || isProcessing || isPaused) return;
 
     setIsProcessing(true);
     setShowCheckStatus(false);
@@ -75,22 +81,52 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
       const { reference, amount } = refResponse.data;
       currentReference = reference;
 
-      // Step 2: Create and sign transaction
+      // Step 2: Create and sign transaction using wallet adapter
       setStep('signing');
-      const transaction = await createPaymentTransaction(wallet, amount, reference);
-      if (!transaction) {
-        throw new Error('Failed to create transaction');
+
+      if (!TREASURY_WALLET) {
+        throw new Error('Treasury wallet not configured');
       }
 
-      const signature = await signAndSendTransaction(transaction, walletType);
-      if (!signature) {
-        // User cancelled - don't store reference
-        throw new Error('Transaction cancelled');
-      }
+      const toPubkey = new PublicKey(TREASURY_WALLET);
+      const referenceKeypair = Keypair.generate();
+
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+
+      const transaction = new Transaction({
+        blockhash,
+        lastValidBlockHeight,
+        feePayer: publicKey,
+      });
+
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey,
+          lamports: Math.floor(amount * LAMPORTS_PER_SOL),
+        })
+      );
+
+      // Add reference for tracking
+      transaction.instructions[0].keys.push({
+        pubkey: referenceKeypair.publicKey,
+        isSigner: false,
+        isWritable: false,
+      });
+
+      // Use wallet adapter to send transaction (works on mobile!)
+      const signature = await sendTransaction(transaction, connection);
 
       // Only store reference AFTER user has signed (transaction sent to chain)
       localStorage.setItem(`pending_payment_${wallet}`, reference);
       setPendingReference(reference);
+
+      // Wait for confirmation
+      await connection.confirmTransaction({
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      }, 'confirmed');
 
       // Step 3: Verify payment on server
       setStep('verifying');
@@ -113,7 +149,7 @@ export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
       console.error('Payment error:', error);
       const message = error instanceof Error ? error.message : 'Payment failed';
       // Only show toast if not a simple cancel
-      if (message !== 'Transaction cancelled') {
+      if (!message.includes('User rejected') && message !== 'Transaction cancelled') {
         addToast('error', message);
       }
     } finally {
