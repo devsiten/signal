@@ -44,9 +44,10 @@ export function useWallet() {
   const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
   const solflareWallet = wallets.find(w => w.adapter.name === 'Solflare');
 
-  // Check if wallets are available
-  const hasPhantom = !!phantomWallet;
-  const hasSolflare = !!solflareWallet;
+  // Check if wallets are ACTUALLY installed (readyState === 'Installed' or 'Loadable')
+  // 'Installed' means extension is present, 'Loadable' means it can be loaded (e.g., mobile deep link)
+  const hasPhantom = phantomWallet?.readyState === 'Installed' || phantomWallet?.readyState === 'Loadable';
+  const hasSolflare = solflareWallet?.readyState === 'Installed' || solflareWallet?.readyState === 'Loadable';
 
   // Authenticate wallet with backend - ONE TIME ONLY per wallet address
   useEffect(() => {
