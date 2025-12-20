@@ -162,8 +162,10 @@ export function Header() {
                   <img src="https://phantom.app/img/logo.png" alt="Phantom" className="w-8 h-8 rounded-lg" />
                   <span className="font-medium text-text-primary">Phantom</span>
                 </span>
-                {!hasPhantom && (
-                  <span className="text-xs text-accent-gold">Install</span>
+                {hasPhantom ? (
+                  <span className="text-xs text-accent-emerald">Detected</span>
+                ) : (
+                  <span className="text-xs text-text-muted">Not Detected</span>
                 )}
               </button>
 
@@ -177,8 +179,10 @@ export function Header() {
                   <img src="https://solflare.com/favicon.ico" alt="Solflare" className="w-8 h-8 rounded-lg" />
                   <span className="font-medium text-text-primary">Solflare</span>
                 </span>
-                {!hasSolflare && (
-                  <span className="text-xs text-accent-gold">Install</span>
+                {hasSolflare ? (
+                  <span className="text-xs text-accent-emerald">Detected</span>
+                ) : (
+                  <span className="text-xs text-text-muted">Not Detected</span>
                 )}
               </button>
             </div>
