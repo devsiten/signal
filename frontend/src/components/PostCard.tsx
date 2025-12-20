@@ -12,7 +12,13 @@ interface PostCardProps {
 
 export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
   const isLocked = post.is_premium && !isPremium;
-  const showBlur = isLocked && locked;
+  const showHidden = isLocked && locked;
+
+  // For locked content, show placeholder text instead of real content
+  const displayTitle = showHidden ? '🔒 Premium Signal' : post.title;
+  const displayPreview = showHidden
+    ? 'This signal is exclusive to premium members. Subscribe to unlock full access to all trading calls, tickers, and contract addresses.'
+    : post.preview;
 
   return (
     <Link href={`/post/${post.id}`}>
@@ -25,13 +31,8 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
-            <h3
-              className={cn(
-                'font-display text-lg font-semibold text-text-primary line-clamp-2',
-                showBlur && 'blur-premium'
-              )}
-            >
-              {post.title}
+            <h3 className="font-display text-lg font-semibold text-text-primary line-clamp-2">
+              {displayTitle}
             </h3>
             <time className="text-sm text-text-muted mt-1 block">
               {formatDate(post.created_at)}
@@ -54,18 +55,13 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
         </div>
 
         {/* Preview */}
-        <p
-          className={cn(
-            'text-text-secondary text-sm leading-relaxed flex-1',
-            showBlur && 'blur-premium'
-          )}
-        >
-          {post.preview}
+        <p className="text-text-secondary text-sm leading-relaxed flex-1">
+          {displayPreview}
         </p>
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-subtle">
-          {post.image_count > 0 && (
+          {post.image_count > 0 && !showHidden && (
             <span className="flex items-center gap-1 text-text-muted text-sm">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -73,7 +69,7 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
               {post.image_count}
             </span>
           )}
-          
+
           {isLocked ? (
             <span className="text-accent-gold text-sm font-medium">
               Unlock with Premium
@@ -88,4 +84,5 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
     </Link>
   );
 }
+
 

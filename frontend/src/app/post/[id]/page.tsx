@@ -111,16 +111,17 @@ export default function PostPage() {
             </span>
           </div>
 
+          {/* Hide actual title for locked posts */}
           <h1 className="font-display text-3xl md:text-4xl font-bold text-text-primary mb-4">
-            {post.title}
+            {isLocked ? '🔒 Premium Signal' : post.title}
           </h1>
 
           <time className="text-text-secondary">
             {formatDate(post.created_at)}
           </time>
 
-          {/* Contract Address */}
-          {(post as any).contract_address && (
+          {/* Contract Address - ONLY show for unlocked posts */}
+          {!isLocked && (post as any).contract_address && (
             <div className="mt-4 flex items-center gap-2 px-4 py-3 rounded-lg bg-bg-tertiary border border-border-subtle">
               <span className="text-text-muted text-sm">Contract:</span>
               <code className="text-text-primary font-mono text-sm flex-1 truncate">
@@ -143,21 +144,11 @@ export default function PostPage() {
           )}
         </header>
 
-        {/* Locked Content Overlay */}
+        {/* Locked Content - Show NO real content */}
         {isLocked ? (
-          <div className="relative">
-            {/* Blurred Preview */}
-            <div className="blur-premium select-none pointer-events-none">
-              <div className="prose-content" dangerouslySetInnerHTML={{ __html: post.content.slice(0, 500) }} />
-              {post.images.length > 0 && (
-                <div className="mt-6 grid gap-4">
-                  <div className="aspect-video bg-bg-tertiary rounded-xl" />
-                </div>
-              )}
-            </div>
-
-            {/* Unlock CTA Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-bg-primary via-bg-primary/90 to-transparent">
+          <div className="relative py-12">
+            {/* Unlock CTA - No content preview */}
+            <div className="flex items-center justify-center">
               <div className="text-center p-8 rounded-2xl bg-bg-card border border-border-subtle max-w-md mx-4">
                 <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent-gold/10 flex items-center justify-center">
                   <svg className="w-8 h-8 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,7 +159,7 @@ export default function PostPage() {
                   Premium Content
                 </h3>
                 <p className="text-text-secondary mb-6">
-                  Subscribe to unlock this signal and all premium content.
+                  This signal contains exclusive alpha including ticker, contract address, and full analysis. Subscribe to unlock.
                 </p>
                 <PaymentButton className="w-full" />
               </div>
