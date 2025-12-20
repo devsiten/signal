@@ -34,7 +34,9 @@ export function useWallet() {
 
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const authAttemptedRef = useRef(false);
+
+  // Track which wallet addresses we've already tried to authenticate
+  const authenticatedAddressRef = useRef<string | null>(null);
 
   const walletAddress = publicKey?.toBase58() || null;
 
@@ -46,71 +48,71 @@ export function useWallet() {
   const hasPhantom = !!phantomWallet;
   const hasSolflare = !!solflareWallet;
 
-  // Authenticate wallet with backend after connection
+  // Authenticate wallet with backend - ONE TIME ONLY per wallet address
   useEffect(() => {
-    // Skip if:
-    // 1. Not connected
-    // 2. No wallet address from adapter
-    // 3. Already authenticating
-    // 4. Already attempted auth for this connection
-    // 5. Wallet address matches what's already in our app store (already authenticated)
-    if (!connected || !walletAddress || isAuthenticating || authAttemptedRef.current) {
+    // Don't do anything if not connected or no address
+    if (!connected || !walletAddress) {
       return;
     }
 
-    // If the connected wallet address matches our stored wallet, we're already authenticated
+    // Already authenticated with this address in our store
     if (wallet === walletAddress) {
-      console.log('Already authenticated with this wallet');
       return;
     }
 
-    // Mark that we're attempting auth
-    authAttemptedRef.current = true;
+    // Already attempted/completed auth for this specific address in this session
+    if (authenticatedAddressRef.current === walletAddress) {
+      return;
+    }
+
+    // Already in the middle of authenticating
+    if (isAuthenticating) {
+      return;
+    }
+
+    // Mark this address as being handled - NEVER reset this for the same address
+    authenticatedAddressRef.current = walletAddress;
 
     const doAuth = async () => {
       setIsAuthenticating(true);
 
       try {
-        // Check if signMessage is available
+        // Wait for signMessage to be ready
         if (!adapterSignMessage) {
-          console.error('signMessage not available yet, retrying...');
-          // Retry after a short delay
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          if (!adapterSignMessage) {
-            throw new Error('Wallet does not support message signing');
-          }
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        if (!adapterSignMessage) {
+          addToast('error', 'Wallet does not support signing');
+          setIsAuthenticating(false);
+          return;
         }
 
         const timestamp = Date.now();
         const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${walletAddress}\nTimestamp: ${timestamp}`;
 
-        console.log('Requesting signature...');
         const encodedMessage = new TextEncoder().encode(message);
         const signatureBytes = await adapterSignMessage(encodedMessage);
-        console.log('Signature received');
 
-        // Convert to base58
         const bs58 = await import('bs58');
         const signature = bs58.default.encode(signatureBytes);
 
-        console.log('Verifying with backend...');
         const response = await verifyWallet(walletAddress, signature, message);
 
         if (!response.success) {
-          throw new Error(response.error || 'Authentication failed');
+          addToast('error', response.error || 'Authentication failed');
+          setIsAuthenticating(false);
+          return;
         }
 
-        console.log('Backend verified, setting wallet state...');
         const walletName = adapterWallet?.adapter?.name?.toLowerCase() || 'phantom';
         setWallet(walletAddress, walletName as 'phantom' | 'solflare');
 
-        // Get session info
         const sessionResponse = await getSession();
         if (sessionResponse.success && sessionResponse.data) {
           setIsAdmin(sessionResponse.data.isAdmin);
         }
 
-        // Get subscription status
         const subResponse = await getSubscriptionStatus(walletAddress);
         if (subResponse.success && subResponse.data) {
           setSubscription(subResponse.data);
@@ -118,33 +120,31 @@ export function useWallet() {
 
         localStorage.setItem('lastActivity', Date.now().toString());
         addToast('success', 'Wallet connected');
-        console.log('Connection complete!');
 
       } catch (error: any) {
-        console.error('Authentication error:', error);
-        authAttemptedRef.current = false; // Allow retry
-
+        console.error('Auth error:', error);
+        // User rejected - disconnect
         if (error?.message?.includes('User rejected') || error?.message?.includes('cancelled')) {
           addToast('error', 'Signing cancelled');
-          // Disconnect since user rejected
           try { await adapterDisconnect(); } catch { }
         } else {
-          addToast('error', error.message || 'Connection failed');
+          addToast('error', 'Connection failed');
         }
+        // DON'T reset authenticatedAddressRef - we don't want to retry automatically
       } finally {
         setIsAuthenticating(false);
       }
     };
 
     doAuth();
-  }, [connected, walletAddress, wallet, isAuthenticating, adapterSignMessage, adapterWallet]);
+  }, [connected, walletAddress]); // Minimal dependencies
 
-  // Reset auth attempt flag when disconnected
+  // Clear auth tracking when wallet disconnects
   useEffect(() => {
-    if (!connected) {
-      authAttemptedRef.current = false;
+    if (!connected && !walletAddress) {
+      authenticatedAddressRef.current = null;
     }
-  }, [connected]);
+  }, [connected, walletAddress]);
 
   // Handle disconnection - clear our app state
   useEffect(() => {
@@ -155,7 +155,7 @@ export function useWallet() {
 
   // Check session on mount
   useEffect(() => {
-    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours
+    const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000;
 
     const checkSession = async () => {
       const lastActivity = localStorage.getItem('lastActivity');
@@ -172,6 +172,9 @@ export function useWallet() {
       if (response.success && response.data) {
         setWallet(response.data.wallet, walletType);
         setIsAdmin(response.data.isAdmin);
+
+        // Mark as already authenticated
+        authenticatedAddressRef.current = response.data.wallet;
 
         const subResponse = await getSubscriptionStatus(response.data.wallet);
         if (subResponse.success && subResponse.data) {
@@ -223,7 +226,7 @@ export function useWallet() {
     };
   }, [wallet]);
 
-  // Connect to specific wallet - select and then connect
+  // Connect to specific wallet
   const connectToWallet = useCallback(async (walletName: 'Phantom' | 'Solflare') => {
     try {
       setShowWalletModal(false);
@@ -231,7 +234,6 @@ export function useWallet() {
       const targetWallet = walletName === 'Phantom' ? phantomWallet : solflareWallet;
 
       if (!targetWallet) {
-        // Wallet not installed - redirect to download
         const url = walletName === 'Phantom'
           ? 'https://phantom.app/'
           : 'https://solflare.com/';
@@ -239,19 +241,18 @@ export function useWallet() {
         return;
       }
 
-      // Select the wallet adapter
+      // Reset auth tracking for new connection attempt
+      authenticatedAddressRef.current = null;
+
       select(targetWallet.adapter.name);
 
-      // Small delay then connect
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Trigger connect - this will cause the wallet to prompt for connection
       try {
         await adapterConnect();
       } catch (err: any) {
-        // User might have rejected, or wallet might auto-connect
         if (!err?.message?.includes('rejected')) {
-          console.log('Connect triggered, adapter will handle it');
+          console.log('Connect triggered');
         }
       }
 
@@ -280,6 +281,7 @@ export function useWallet() {
     setSubscription(null);
     setIsAdmin(false);
     localStorage.removeItem('lastActivity');
+    authenticatedAddressRef.current = null;
   };
 
   // Disconnect
@@ -319,10 +321,8 @@ export function useWallet() {
     connectToWallet,
     disconnect,
     refreshSubscription,
-    // Custom modal state
     showWalletModal,
     closeWalletModal,
-    // Expose adapter for payment transactions
     adapterWallet,
     publicKey,
     signMessage: adapterSignMessage,
