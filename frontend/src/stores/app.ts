@@ -79,6 +79,7 @@ export const useAppStore = create<AppState>()(
         wallet: state.wallet,
         walletType: state.walletType,
         settings: state.settings,
+        isAdmin: state.isAdmin,
       }),
     }
   )
