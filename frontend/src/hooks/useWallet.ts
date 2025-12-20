@@ -110,6 +110,47 @@ export function useWallet() {
   // Note: Session check is now handled in the connection effect above
   // to prevent race conditions with autoConnect
 
+  // === SESSION EXPIRATION: Auto-logout after 2 hours ===
+  const SESSION_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+  useEffect(() => {
+    if (!wallet) return;
+
+    // Check session expiration every minute
+    const checkExpiration = () => {
+      const lastActivity = localStorage.getItem('lastActivity');
+      if (lastActivity) {
+        const elapsed = Date.now() - parseInt(lastActivity, 10);
+        if (elapsed > SESSION_TIMEOUT_MS) {
+          addToast('info', 'Session expired. Please reconnect your wallet.');
+          handleLogout();
+          adapterDisconnect().catch(() => { });
+          window.location.href = '/';
+        }
+      }
+    };
+
+    // Check immediately and then every minute
+    checkExpiration();
+    const interval = setInterval(checkExpiration, 60 * 1000);
+
+    // Update lastActivity on user interaction
+    const updateActivity = () => {
+      localStorage.setItem('lastActivity', Date.now().toString());
+    };
+
+    window.addEventListener('click', updateActivity);
+    window.addEventListener('keydown', updateActivity);
+    window.addEventListener('scroll', updateActivity);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('click', updateActivity);
+      window.removeEventListener('keydown', updateActivity);
+      window.removeEventListener('scroll', updateActivity);
+    };
+  }, [wallet, adapterDisconnect, addToast]);
+
   // MANUAL auth - called when user clicks "Sign to Continue"
   const authenticateWallet = useCallback(async () => {
     if (!connected || !walletAddress || !adapterSignMessage) {
