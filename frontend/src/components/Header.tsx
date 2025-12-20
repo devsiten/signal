@@ -20,6 +20,8 @@ export function Header() {
     disconnect,
     showWalletModal,
     closeWalletModal,
+    needsAuth,
+    authenticateWallet,
   } = useWallet();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -97,6 +99,14 @@ export function Header() {
                     </span>
                   </Link>
                 </div>
+              ) : needsAuth ? (
+                <button
+                  onClick={authenticateWallet}
+                  disabled={isConnecting}
+                  className="btn btn-primary animate-pulse"
+                >
+                  {isConnecting ? 'Signing...' : 'Sign to Continue'}
+                </button>
               ) : (
                 <button
                   onClick={connect}
