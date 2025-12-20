@@ -78,7 +78,8 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         wallet: state.wallet,
         walletType: state.walletType,
-        settings: state.settings,
+        // NOTE: settings is NOT persisted - always fetched fresh from server
+        // This ensures pause status is always current
         isAdmin: state.isAdmin,
       }),
     }
