@@ -113,7 +113,7 @@ export default function PostPage() {
 
           {/* Hide actual title for locked posts */}
           <h1 className="font-display text-3xl md:text-4xl font-bold text-text-primary mb-4">
-            {isLocked ? '🔒 Premium Signal' : post.title}
+            {isLocked ? 'Premium Signal' : post.title}
           </h1>
 
           <time className="text-text-secondary">

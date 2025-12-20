@@ -15,7 +15,7 @@ export function PostCard({ post, isPremium, locked = false }: PostCardProps) {
   const showHidden = isLocked && locked;
 
   // For locked content, show placeholder text instead of real content
-  const displayTitle = showHidden ? '🔒 Premium Signal' : post.title;
+  const displayTitle = showHidden ? 'Premium Signal' : post.title;
   const displayPreview = showHidden
     ? 'This signal is exclusive to premium members. Subscribe to unlock full access to all trading calls, tickers, and contract addresses.'
     : post.preview;

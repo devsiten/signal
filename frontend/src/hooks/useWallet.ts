@@ -1,11 +1,10 @@
 ﻿'use client';
 
-import { useCallback, useEffect } from 'react';
-import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useAppStore } from '@/stores/app';
 import { verifyWallet, getSession, logout, getSubscriptionStatus } from '@/lib/api';
-import { formatWallet, signMessageWithWallet } from '@/lib/wallet';
+import { formatWallet } from '@/lib/wallet';
 
 export function useWallet() {
   const {
@@ -15,9 +14,11 @@ export function useWallet() {
     connecting,
     disconnect: adapterDisconnect,
     signMessage: adapterSignMessage,
+    select,
+    wallets,
   } = useSolanaWallet();
 
-  const { setVisible } = useWalletModal();
+  const { connection } = useConnection();
 
   const {
     wallet,
@@ -30,18 +31,103 @@ export function useWallet() {
     addToast,
   } = useAppStore();
 
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const hasAuthenticated = useRef(false);
+
   const walletAddress = publicKey?.toBase58() || null;
 
-  // Sync wallet adapter state with app store
+  // Get only Phantom and Solflare from available wallets
+  const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
+  const solflareWallet = wallets.find(w => w.adapter.name === 'Solflare');
+
+  // Check if wallets are available (installed or can deep-link)
+  const hasPhantom = !!phantomWallet;
+  const hasSolflare = !!solflareWallet;
+
+  // Authenticate wallet with backend after connection
   useEffect(() => {
-    if (connected && walletAddress && !wallet) {
-      // Wallet connected via adapter but not authenticated yet
-      authenticateWallet(walletAddress);
-    } else if (!connected && wallet) {
-      // Wallet disconnected
+    const authenticate = async () => {
+      if (connected && walletAddress && !wallet && !isAuthenticating && !hasAuthenticated.current) {
+        hasAuthenticated.current = true;
+        setIsAuthenticating(true);
+
+        try {
+          // Wait a bit for signMessage to be available
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          if (!adapterSignMessage) {
+            console.error('signMessage not available');
+            addToast('error', 'Please try connecting again');
+            await adapterDisconnect();
+            hasAuthenticated.current = false;
+            setIsAuthenticating(false);
+            return;
+          }
+
+          const timestamp = Date.now();
+          const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${walletAddress}\nTimestamp: ${timestamp}`;
+
+          const encodedMessage = new TextEncoder().encode(message);
+          const signatureBytes = await adapterSignMessage(encodedMessage);
+
+          // Convert to base58
+          const bs58 = await import('bs58');
+          const signature = bs58.default.encode(signatureBytes);
+
+          const response = await verifyWallet(walletAddress, signature, message);
+          if (!response.success) {
+            addToast('error', response.error || 'Authentication failed');
+            hasAuthenticated.current = false;
+            setIsAuthenticating(false);
+            return;
+          }
+
+          const walletName = adapterWallet?.adapter?.name?.toLowerCase() || 'phantom';
+          setWallet(walletAddress, walletName as 'phantom' | 'solflare');
+
+          const sessionResponse = await getSession();
+          if (sessionResponse.success && sessionResponse.data) {
+            setIsAdmin(sessionResponse.data.isAdmin);
+          }
+
+          const subResponse = await getSubscriptionStatus(walletAddress);
+          if (subResponse.success && subResponse.data) {
+            setSubscription(subResponse.data);
+          }
+
+          localStorage.setItem('lastActivity', Date.now().toString());
+          addToast('success', 'Wallet connected');
+        } catch (error: any) {
+          console.error('Authentication error:', error);
+          if (error?.message?.includes('User rejected')) {
+            addToast('error', 'Signing cancelled');
+          } else {
+            addToast('error', 'Connection failed. Please try again.');
+          }
+          hasAuthenticated.current = false;
+        } finally {
+          setIsAuthenticating(false);
+        }
+      }
+    };
+
+    authenticate();
+  }, [connected, walletAddress, wallet, adapterSignMessage]);
+
+  // Reset auth flag when disconnected
+  useEffect(() => {
+    if (!connected) {
+      hasAuthenticated.current = false;
+    }
+  }, [connected]);
+
+  // Handle disconnection
+  useEffect(() => {
+    if (!connected && wallet) {
       handleLogout();
     }
-  }, [connected, walletAddress, wallet]);
+  }, [connected, wallet]);
 
   // Check session on mount
   useEffect(() => {
@@ -113,55 +199,35 @@ export function useWallet() {
     };
   }, [wallet]);
 
-  // Authenticate wallet with backend
-  const authenticateWallet = async (address: string) => {
+  // Connect to specific wallet
+  const connectToWallet = useCallback(async (walletName: 'Phantom' | 'Solflare') => {
     try {
-      if (!adapterSignMessage) {
-        addToast('error', 'Wallet does not support message signing');
-        return;
+      const targetWallet = walletName === 'Phantom' ? phantomWallet : solflareWallet;
+      if (targetWallet) {
+        select(targetWallet.adapter.name);
+        setShowWalletModal(false);
+      } else {
+        // Wallet not installed - redirect to download
+        const url = walletName === 'Phantom'
+          ? 'https://phantom.app/'
+          : 'https://solflare.com/';
+        window.open(url, '_blank');
       }
-
-      const timestamp = Date.now();
-      const message = `Sign this message to authenticate with Hussayn Alpha.\n\nWallet: ${address}\nTimestamp: ${timestamp}`;
-
-      const encodedMessage = new TextEncoder().encode(message);
-      const signatureBytes = await adapterSignMessage(encodedMessage);
-
-      // Convert to base58
-      const bs58 = await import('bs58');
-      const signature = bs58.default.encode(signatureBytes);
-
-      const response = await verifyWallet(address, signature, message);
-      if (!response.success) {
-        addToast('error', response.error || 'Authentication failed');
-        return;
-      }
-
-      const walletName = adapterWallet?.adapter?.name?.toLowerCase() || 'phantom';
-      setWallet(address, walletName as 'phantom' | 'solflare');
-
-      const sessionResponse = await getSession();
-      if (sessionResponse.success && sessionResponse.data) {
-        setIsAdmin(sessionResponse.data.isAdmin);
-      }
-
-      const subResponse = await getSubscriptionStatus(address);
-      if (subResponse.success && subResponse.data) {
-        setSubscription(subResponse.data);
-      }
-
-      localStorage.setItem('lastActivity', Date.now().toString());
-      addToast('success', 'Wallet connected');
     } catch (error) {
-      console.error('Authentication error:', error);
-      addToast('error', 'Failed to authenticate wallet');
+      console.error('Connect error:', error);
+      addToast('error', 'Failed to connect wallet');
     }
-  };
+  }, [phantomWallet, solflareWallet, select, addToast]);
 
-  // Open wallet modal (works on desktop AND mobile)
+  // Open custom wallet modal
   const connect = useCallback(() => {
-    setVisible(true);
-  }, [setVisible]);
+    setShowWalletModal(true);
+  }, []);
+
+  // Close wallet modal
+  const closeWalletModal = useCallback(() => {
+    setShowWalletModal(false);
+  }, []);
 
   // Handle logout
   const handleLogout = async () => {
@@ -199,18 +265,23 @@ export function useWallet() {
     walletType,
     formattedWallet: wallet ? formatWallet(wallet) : null,
     isConnected: !!wallet,
-    isConnecting: connecting,
-    hasPhantom: true, // Always true - adapter handles availability
-    hasSolflare: true, // Always true - adapter handles availability
+    isConnecting: connecting || isAuthenticating,
+    hasPhantom,
+    hasSolflare,
     subscription,
     isAdmin,
     isPremium: subscription?.isActive || false,
     connect,
+    connectToWallet,
     disconnect,
     refreshSubscription,
+    // Custom modal state
+    showWalletModal,
+    closeWalletModal,
     // Expose adapter for payment transactions
     adapterWallet,
     publicKey,
     signMessage: adapterSignMessage,
+    connection,
   };
 }

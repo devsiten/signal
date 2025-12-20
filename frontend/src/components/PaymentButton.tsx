@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
-import { useConnection } from '@solana/wallet-adapter-react';
 import { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import { useWallet } from '@/hooks/useWallet';
 import { useAppStore } from '@/stores/app';
@@ -17,9 +16,8 @@ interface PaymentButtonProps {
 }
 
 export function PaymentButton({ className, onSuccess }: PaymentButtonProps) {
-  const { wallet, isConnected, refreshSubscription } = useWallet();
+  const { wallet, isConnected, refreshSubscription, connection } = useWallet();
   const { publicKey, sendTransaction } = useSolanaWallet();
-  const { connection } = useConnection();
   const { settings, setSettings, addToast } = useAppStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<'idle' | 'creating' | 'signing' | 'verifying' | 'checking'>('idle');

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@/hooks/useWallet';
+import { cn } from '@/lib/utils';
 
 export function Header() {
   const {
@@ -10,10 +11,15 @@ export function Header() {
     formattedWallet,
     isConnected,
     isConnecting,
+    hasPhantom,
+    hasSolflare,
     isPremium,
     isAdmin,
     connect,
+    connectToWallet,
     disconnect,
+    showWalletModal,
+    closeWalletModal,
   } = useWallet();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -26,7 +32,7 @@ export function Header() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Left side: Mobile menu button + Logo */}
             <div className="flex items-center gap-2">
-              {/* Mobile menu button - left side near logo */}
+              {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 text-text-secondary hover:text-text-primary"
@@ -53,34 +59,19 @@ export function Header() {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8">
-              <Link
-                href="/"
-                className="text-text-secondary hover:text-text-primary transition-colors"
-              >
+              <Link href="/" className="text-text-secondary hover:text-text-primary transition-colors">
                 Home
               </Link>
-              <Link
-                href="/wins"
-                className="text-text-secondary hover:text-text-primary transition-colors"
-              >
+              <Link href="/wins" className="text-text-secondary hover:text-text-primary transition-colors">
                 Wins
               </Link>
-              <Link
-                href="/loses"
-                className="text-text-secondary hover:text-text-primary transition-colors"
-              >
+              <Link href="/loses" className="text-text-secondary hover:text-text-primary transition-colors">
                 Loses
               </Link>
-              <Link
-                href="/pricing"
-                className="text-text-secondary hover:text-text-primary transition-colors"
-              >
+              <Link href="/pricing" className="text-text-secondary hover:text-text-primary transition-colors">
                 Pricing
               </Link>
-              <Link
-                href="/disclaimer"
-                className="text-text-secondary hover:text-text-primary transition-colors"
-              >
+              <Link href="/disclaimer" className="text-text-secondary hover:text-text-primary transition-colors">
                 Disclaimer
               </Link>
             </nav>
@@ -121,41 +112,21 @@ export function Header() {
 
         {/* Mobile Nav */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border-subtle">
+          <div className="md:hidden border-t border-border-subtle bg-bg-primary/95 backdrop-blur-sm">
             <nav className="flex flex-col p-4 gap-2">
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
-              >
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
                 Home
               </Link>
-              <Link
-                href="/wins"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
-              >
+              <Link href="/wins" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
                 Wins
               </Link>
-              <Link
-                href="/loses"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
-              >
+              <Link href="/loses" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
                 Loses
               </Link>
-              <Link
-                href="/pricing"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
-              >
+              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
                 Pricing
               </Link>
-              <Link
-                href="/disclaimer"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors"
-              >
+              <Link href="/disclaimer" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
                 Disclaimer
               </Link>
             </nav>
@@ -163,13 +134,70 @@ export function Header() {
         )}
       </header>
 
+      {/* Custom Wallet Selection Modal - ONLY Phantom & Solflare */}
+      {showWalletModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={closeWalletModal}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-bg-card border border-border-subtle p-6 shadow-2xl animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-display text-2xl font-semibold text-text-primary mb-2">
+              Connect Wallet
+            </h2>
+            <p className="text-text-secondary mb-6">
+              Choose your Solana wallet to continue.
+            </p>
+
+            <div className="space-y-3">
+              {/* Phantom */}
+              <button
+                onClick={() => connectToWallet('Phantom')}
+                disabled={isConnecting}
+                className="wallet-btn w-full justify-between bg-bg-tertiary border border-border-subtle hover:border-accent-gold/30"
+              >
+                <span className="flex items-center gap-3">
+                  <img src="https://phantom.app/img/logo.png" alt="Phantom" className="w-8 h-8 rounded-lg" />
+                  <span className="font-medium text-text-primary">Phantom</span>
+                </span>
+                {!hasPhantom && (
+                  <span className="text-xs text-accent-gold">Install</span>
+                )}
+              </button>
+
+              {/* Solflare */}
+              <button
+                onClick={() => connectToWallet('Solflare')}
+                disabled={isConnecting}
+                className="wallet-btn w-full justify-between bg-bg-tertiary border border-border-subtle hover:border-accent-gold/30"
+              >
+                <span className="flex items-center gap-3">
+                  <img src="https://solflare.com/favicon.ico" alt="Solflare" className="w-8 h-8 rounded-lg" />
+                  <span className="font-medium text-text-primary">Solflare</span>
+                </span>
+                {!hasSolflare && (
+                  <span className="text-xs text-accent-gold">Install</span>
+                )}
+              </button>
+            </div>
+
+            <button
+              onClick={closeWalletModal}
+              className="mt-6 w-full py-3 text-text-secondary hover:text-text-primary transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Click outside to close menus */}
       {showUserMenu && (
         <div
           className="fixed inset-0 z-30"
-          onClick={() => {
-            setShowUserMenu(false);
-          }}
+          onClick={() => setShowUserMenu(false)}
         />
       )}
     </>
